@@ -15,7 +15,8 @@ The smoke test needs no GPU/network: it shadows tools with `scripts/stubs/*` via
 ## Code map (grep the anchor, then read only that range)
 | File | What | Anchors |
 |---|---|---|
-| `app.py` | config, tool discovery, job persistence, subprocess runner, pipeline, API | `MODELS =`, `def resolve_tools`, `def update`, `def run_process`, `def step_download`, `def step_transcribe`, `def process_job`, `def guard_request`, `@app.` |
+| `whisper_worker.py` | long-lived mlx_whisper process (stdin JSON jobs, `@@ready`/`@@done` lines) | `def main` |
+| `app.py` | config, tool discovery, job persistence, subprocess runner, pipeline, LLM providers (HTTP + CLI) + settings, AI recap/chat (SQLite), API | `MODELS =`, `def resolve_tools`, `def update`, `def run_process`, `class WhisperWorker`, `def write_outputs`, `def step_download`, `def step_transcribe`, `def process_job`, `PROVIDER_PRESETS`, `def load_config`, `def llm_complete`, `def _cli_chat`, `def run_recap`, `SCHEMA =`, `def run_chat`, `def guard_request`, `@app.` |
 | `static/app.js` | `I18N` dict (top ~250 lines), render + event code below | `const I18N`, `function renderDetail`, `function renderJobs`, `function submit`, `event wiring` |
 | `static/app.css` | design tokens on `:root` and `:root[data-theme="dark"]`, then components | `/* ----------` section comments |
 | `static/index.html` | markup; visible text via `data-i18n*` attributes | ids: `createForm`, `jobRows`, `drawer` |
