@@ -6,6 +6,7 @@ p = argparse.ArgumentParser()
 p.add_argument("audio")
 for flag in ("--model", "--output-dir", "--output-name", "--output-format", "--language", "--initial-prompt"):
     p.add_argument(flag)
+p.add_argument("--condition-on-previous-text", default="True")
 a = p.parse_args()
 
 if os.environ.get("STUB_FAIL") == "mlx":
@@ -22,6 +23,7 @@ for i in range(3):
     time.sleep(1.0 if "STUB_SLOW" in (a.initial_prompt or "") else float(os.environ.get("STUB_DELAY", "0.1")))
 
 base = os.path.join(a.output_dir, a.output_name)
-json.dump({"text": "", "segments": segments, "language": a.language or "en"}, open(base + ".json", "w"))
+json.dump({"text": "", "segments": segments, "language": a.language or "en",
+           "stub_condition": a.condition_on_previous_text == "True"}, open(base + ".json", "w"))
 for ext in ("srt", "vtt", "txt", "tsv"):
     open(f"{base}.{ext}", "w").write("\n".join(s["text"].strip() for s in segments))

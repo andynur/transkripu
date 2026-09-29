@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+"""Test stub for the Codex CLI (`codex exec ... -o FILE -`): checks the read-only,
+non-interactive flags, reads the prompt from stdin and writes a fixed recap or chat
+answer (citing the last timestamp) to the -o file."""
+import re
+import sys
+
+args = sys.argv[1:]
+prompt = sys.stdin.read()
+required = ["exec", "--sandbox", "read-only", "--skip-git-repo-check", "--ephemeral", "--ignore-user-config", "-o", "-"]
+if any(a not in args for a in required):
+    raise SystemExit("stub: expected a read-only, non-interactive `codex exec` invocation")
+
+stamps = re.findall(r"^\[(\d+:\d{2}(?::\d{2})?)\]", prompt, re.M)
+last = stamps[-1] if stamps else "00:00"
+if "The user's latest question" in prompt:
+    text = f"Codex answer, see [{last}]"
+else:
+    lang = "Indonesian" if "in Indonesian" in prompt else "English"
+    text = f"# Stub Codex recap\n\n## Summary\nA {lang} recap.\n\n## Key points\n- Point [{last}]\n"
+print("codex stub: working", file=sys.stderr)
+with open(args[args.index("-o") + 1], "w") as f:
+    f.write(text)

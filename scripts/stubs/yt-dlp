@@ -7,4 +7,4 @@ for pct in (10, 60, 100):
     print(f"[download]  {pct}.0% of 1.00MiB", flush=True)
     time.sleep(0.05)
 open(out.replace("%(ext)s", "m4a"), "wb").write(b"\0" * 1024)
-json.dump({"title": "Stub Video"}, open(out.replace("%(ext)s", "info.json"), "w"))
+json.dump({"title": "Stub Video", "duration": 6}, open(out.replace("%(ext)s", "info.json"), "w"))
