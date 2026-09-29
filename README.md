@@ -28,6 +28,7 @@ pipx install mlx-whisper
 | `ffmpeg` / `ffprobe` | Decodes media for Whisper; reads duration for progress. |
 | `mlx-whisper` | Whisper on the Apple GPU via MLX. |
 | `yt-dlp` + `deno` | Downloads audio from URLs. Deno is required by recent yt-dlp for YouTube. Optional if you only use local files. |
+| An LLM provider | Optional. Writes the **AI recap** (study notes) and answers **chat** questions about a finished transcript. Pick one under ⚙ **AI settings**: a Gemini/Groq/SumoPod API key, a local Ollama/LM Studio, or the `claude` / `codex` CLI with your own login. See [Choosing a provider](#choosing-a-provider). |
 
 ### 2. Run
 
@@ -52,6 +53,7 @@ If Transkripu from this folder is already running, `start.command` just opens th
 ```
 transkripu/
 ├── app.py              # Flask server, job queue, yt-dlp / mlx_whisper integration
+├── whisper_worker.py   # long-lived mlx_whisper process (keeps the model loaded between jobs)
 ├── requirements.txt    # Python deps for the server (Flask only)
 ├── start.command       # macOS launcher: venv + deps + run (reuses a running instance)
 ├── stop.command        # stops the server on the configured port
@@ -61,7 +63,7 @@ transkripu/
 │   └── app.js          # UI logic, i18n dictionary, polling
 ├── scripts/
 │   ├── smoke_test.py   # end-to-end API test with stubbed tools (no GPU needed)
-│   └── stubs/          # fake mlx_whisper / yt-dlp used by the smoke test
+│   └── stubs/          # fake mlx_whisper / yt-dlp (CLI + pylib/ package) used by the smoke test
 ├── AGENTS.md           # guide for AI coding agents (commands, code map, rules)
 ├── CLAUDE.md           # imports AGENTS.md for Claude Code
 ├── .claude/commands/   # /feature, /fix, /review, /handoff for Claude Code
@@ -69,12 +71,14 @@ transkripu/
 │   ├── MASTER_PROMPT.md  # copy-paste prompts for any agent
 │   └── NOTES.md          # one-line decisions & gotchas log
 └── data/               # created at runtime (git-ignore this)
+    ├── transkripu.db     # SQLite: chat history (table chat_messages, keyed by job id)
     └── jobs/<job_id>/
         ├── job.json          # job state (source of truth, reloaded on start)
         ├── source.<ext>      # uploaded or downloaded media
         ├── source.info.json  # yt-dlp metadata (URL jobs)
         ├── log.txt           # full stdout/stderr of every tool invocation
         ├── segments.json     # [{start, end, text}] used by the UI
+        ├── recap.md          # AI recap (optional)
         └── transcript.{srt,vtt,txt,tsv,json}
 ```
 
@@ -89,15 +93,18 @@ Browser ──HTTP──▶ Flask (app.py)
      URL job ──▶ yt-dlp  -f bestaudio[ext=m4a]/bestaudio -N 4   → source.<ext>
                     │
                     ▼
-              mlx_whisper <media> --output-format all            → transcript.*
+              whisper_worker.py (model stays loaded)             → transcript.*
+              or: mlx_whisper <media> --output-format all
                     │  stdout "[mm:ss.xxx --> mm:ss.xxx] text" is parsed live
                     ▼
               job.json updated (status, stage, progress, timings)
-Browser polls /api/jobs every 1.2 s while something is running (5 s when idle)
+Browser polls /api/jobs every 1.2 s while something is running (5 s when idle,
+30 s in a background tab); an unchanged list answers 304 via its ETag.
 ```
 
 - **One worker, sequential jobs.** Whisper saturates the GPU, so parallel jobs would only compete for it.
 - **External CLIs, not imports.** `yt-dlp` and `mlx_whisper` run as subprocesses, so they can live in their own pipx/Homebrew environments and be upgraded independently. If a CLI isn't on `PATH`, the app falls back to `python3 -m <module>` from any interpreter that can import it.
+- **Warm model.** `whisper_worker.py` runs on the Python behind the `mlx_whisper` command (read from its pipx shim) and keeps the model in memory, so every job after the first skips the model load. It exits after 10 idle minutes, when the server stops, or on cancel, and the next job starts a new one. If it cannot start, the `mlx_whisper` CLI is used.
 - **Progress.** Downloads map to 0–20% of the bar and transcription to 20–100% (0–100% for uploads), computed from each segment's end time divided by the `ffprobe` duration.
 - **Cancel** sends `SIGTERM` to the subprocess's process group, which also stops `ffmpeg` children.
 - **Restart safety.** Jobs that were running when the server stopped are marked `error` with `error_code: "interrupted"` and can be retried.
@@ -112,6 +119,8 @@ Browser polls /api/jobs every 1.2 s while something is running (5 s when idle)
 
 `timings` holds `download`, `model_load` and `transcribe` in seconds.
 
+Other fields the UI uses: `queued_at` (queue order), `transcribe_started` (ETA and speed while transcribing), `media_bytes`, `media_removed` (source deleted to save space), `edited` (a segment was corrected), and `options.condition_previous` (`false` = Whisper does not condition on the previous text, which reduces repetition loops).
+
 ## HTTP API
 
 All endpoints are served on `127.0.0.1` only. The API has no authentication, so it refuses requests that another website could forge:
@@ -124,15 +133,28 @@ Clients that send neither header, such as `curl` or scripts, are allowed.
 | Method | Path | Description |
 |---|---|---|
 | `GET` | `/api/health[?refresh=1]` | Tool availability, model IDs, language codes. `refresh` re-scans `PATH`. |
-| `GET` | `/api/jobs` | All jobs, newest first (without segments). |
-| `GET` | `/api/jobs/:id[?since=N]` | One job including `segments` (live while running). While live, `since` returns only segments from index `N`; `segments_from` gives the start index of the returned list and `segments_live` whether it is still growing. |
-| `POST` | `/api/jobs` | Multipart form: `file` **or** `url`, plus `model`, `language` (`en`/`id`/`auto`), `prompt`, `cookies_browser` (`chrome`/`safari`/`firefox`/`edge`/`brave`). Uploads must have a known audio/video extension. |
+| `GET` | `/api/jobs` | All jobs, newest first (without segments). Sends an `ETag`; with a matching `If-None-Match` it answers `304`. |
+| `GET` | `/api/jobs/:id[?since=N]` | One job including `segments` (live while running) and `recap` (Markdown, when `recap_status` is `done`). `ai_lang_default` is the default recap/chat language: the chosen spoken language, else the detected one (`ms` counts as `id`), else `en`. While live, `since` returns only segments from index `N`; `segments_from` gives the start index of the returned list and `segments_live` whether it is still growing. `?segments=0` leaves out a finished job's segments (`segments: null`). Finished jobs also report `disk_bytes` (size of the job folder). |
+| `POST` | `/api/jobs` | Multipart form: `file` **or** `url`, plus `model`, `language` (`en`/`id`/`auto`), `prompt`, `cookies_browser` (`chrome`/`safari`/`firefox`/`edge`/`brave`), `condition_previous` (`0` turns off conditioning on the previous text). Uploads must have a known audio/video extension. One job per request; the UI posts several files or URLs one after another. |
 | `POST` | `/api/jobs/:id/cancel` | Cancel a running or queued job. |
-| `POST` | `/api/jobs/:id/retry` | Re-queue a finished, failed or cancelled job. Reuses already downloaded media and clears the previous outputs. |
+| `POST` | `/api/jobs/:id/retry` | Re-queue a finished, failed or cancelled job. Reuses already downloaded media and clears the previous outputs (including the recap and segment edits). An upload job whose media was deleted answers 409 `media_removed`; a URL job downloads it again. |
+| `GET` | `/api/jobs/:id/chat[?after=ID]` | Chat history `{messages: [{id, role: user\|assistant\|error, text, created, meta}], after, total, busy, partial}`. `after` returns only messages with a higher id; `total` is the full count (a mismatch means the chat was cleared). `partial` is the answer streamed so far while `busy`. |
+| `POST` | `/api/jobs/:id/chat` | JSON `{"text": "...", "lang": "en"\|"id"}` (max 4000 chars). Asks the chat route's provider about a `done` job (202); answers are written in `lang`, which is remembered as the job's `chat_lang` (default: `ai_lang_default`); the transcript, recap and last 20 messages are sent along. If the transcript exceeds the provider's `max_input_tokens`, only the best-matching segments are sent (`meta.excerpt`). Answers carry `meta.provider`, `meta.model`, `meta.fallback`. Errors: `empty_message`, `message_too_long` (400), `chat_not_ready`, `chat_busy` (409). A failed answer is stored as an `error` message with `meta.error_code` (an `llm_*` code or `chat_failed`). |
+| `POST` | `/api/jobs/:id/chat/stop` | Stop the answer being written; the part received so far is stored with `meta.stopped`. |
+| `DELETE` | `/api/jobs/:id/chat` | Clear the chat (409 `chat_busy` while answering). Retry and delete also clear it. |
+| `POST` | `/api/jobs/:id/recap` | JSON `{"lang": "en"\|"id"}`, default `ai_lang_default`. Starts an AI recap of a `done` job with the recap route's provider (202). Progress via `recap_status` (`running`/`done`/`error`), `recap_stage` (`recap_map` with `recap_pct`, `recap_reduce`; chunked mode only: up to 3 parts are summarised at once, one at a time on Groq, Ollama and LM Studio) and `recap_error_code`. Done: `recap_provider`, `recap_model`, `recap_fallback`, `recap_chunks`. Errors: `recap_not_ready`, `recap_running` (409). |
+| `GET` | `/api/settings[?refresh=1]` | LLM providers and routing. Keys are never returned: only `has_key`, `key_last4` and `key_source` (`file`/`env`). `status` per provider: `ready`, `local`, `no_key`, `no_url`, `not_installed`. `refresh` re-scans `PATH` for the CLIs. |
+| `PUT` | `/api/settings` | Partial update `{"providers": {id: {base_url, api_key, model, max_input_tokens}}, "routing": {"recap"\|"chat": {provider, model, fallback: {provider, model}\|null}}}`. `api_key: ""` keeps the stored key, `null` deletes it; an empty `base_url`/`model` means the preset default; `max_input_tokens: 0` means no limit. Errors: `unknown_provider`, `invalid_url`, `invalid_settings`. |
+| `POST` | `/api/settings/test` | JSON `{provider, model?}`. Sends a tiny prompt with the saved settings; returns `{ok, latency_ms, model, error_code?, error?}`. |
+| `GET` | `/api/settings/models?provider=id` | Model IDs from the provider's `GET /models` (`[]` for CLIs). |
 | `DELETE` | `/api/jobs/:id` | Cancel if needed and delete the job folder. |
 | `GET` | `/api/jobs/:id/media` | Source media (supports HTTP Range for seeking). |
-| `GET` | `/api/jobs/:id/download/:fmt` | `srt`, `vtt`, `txt`, `tsv` or `json` as an attachment. |
+| `DELETE` | `/api/jobs/:id/media` | Delete the source media to free disk space; transcript, recap and chat stay (`media: null`, `media_removed: true`). 409 `job_running` while active. |
+| `PUT` | `/api/jobs/:id/segments/:index` | JSON `{"text": "..."}` (whitespace collapsed, max 2000 chars). Corrects one segment of a `done` job and rewrites `segments.json` and every `transcript.*`. Errors: `empty_segment`, `segment_too_long` (400), `edit_not_ready` (409), 404 for an unknown index. |
+| `GET` | `/api/jobs/:id/download/:fmt` | `srt`, `vtt`, `txt`, `tsv`, `json`, or `md` (the AI recap) as an attachment. |
 | `POST` | `/api/jobs/:id/reveal` | Reveal the output in Finder (macOS). |
+
+LLM error codes (recap, chat, test): `llm_no_key`, `llm_no_url`, `llm_auth` (401/403, or Gemini's 400 for a bad key), `llm_rate_limited` (429), `llm_context_too_long`, `llm_model_not_found` (404), `llm_server_error` (5xx), `llm_unreachable`, `llm_timeout`, `llm_bad_response`, `llm_cli_missing`, `llm_cli_failed`. After `llm_no_key`, `llm_no_url`, `llm_cli_missing`, `llm_rate_limited`, `llm_server_error`, `llm_unreachable` or `llm_timeout` the route's fallback provider is tried.
 
 Validation errors return `{ "error_code": "...", "error": "..." }` with a 4xx status: `missing_input`, `invalid_url`, `unknown_model`, `unknown_language`, `unknown_browser`, `unsupported_file`, `job_running` (409), `forbidden` (403), `disk_full` (507).
 
@@ -156,7 +178,29 @@ Environment variables (set them before `./start.command`):
 | `TRANSKRIPU_DATA_DIR` | `./data` | Where job folders are stored |
 | `TRANSKRIPU_NO_BROWSER` | unset | Set to any value to skip opening the browser |
 | `HF_ENDPOINT` | unset | Hugging Face mirror, e.g. `https://hf-mirror.com` if huggingface.co is blocked |
+| `TRANSKRIPU_WHISPER_WORKER` | `1` | `0` runs the `mlx_whisper` CLI for every job instead of keeping the model loaded in `whisper_worker.py` |
+| `TRANSKRIPU_WHISPER_PYTHON` | auto | Python that runs `whisper_worker.py` (must import `mlx_whisper`); default: the one behind the `mlx_whisper` command |
 | `TRANSKRIPU_PATH_PREPEND` | unset | Directories searched first for tools (used by tests to inject stubs) |
+| `TRANSKRIPU_CLAUDE` | auto | Path to the `claude` binary if it is not on `PATH` (nvm and `~/.claude/local` are also searched) |
+| `TRANSKRIPU_CODEX` | auto | Path to the `codex` binary if it is not on `PATH` (nvm is also searched) |
+| `GEMINI_API_KEY` | unset | Gemini API key; overrides the key saved in AI settings |
+| `GROQ_API_KEY` | unset | Groq API key; overrides the saved key |
+| `SUMOPOD_API_KEY` | unset | SumoPod API key; overrides the saved key |
+| `OPENAI_COMPAT_API_KEY` | unset | Key for the "Custom (OpenAI-compatible)" provider; overrides the saved key |
+
+Provider settings (base URLs, models, routing, keys) are edited in the app under ⚙ **AI settings** and stored in `data/config.json` with permissions `0600`. The API never returns a key, and keys are never written to logs.
+
+### Choosing a provider
+
+| Provider | Cost | Notes |
+|---|---|---|
+| Google Gemini (default) | Free tier | Large context: a 1-hour lecture fits in one request. Free-tier data may be used by Google. Key: [aistudio.google.com](https://aistudio.google.com/apikey). |
+| Groq | Free tier | Very fast, but ~8K tokens/minute, so `max_input_tokens` is 6000 and long recaps run in parts (map → reduce), pausing on 429. |
+| SumoPod | Paid (IDR / QRIS) | Copy the base URL and key from the SumoPod dashboard. |
+| Ollama / LM Studio | Free, offline | Runs on this Mac; no key. Start the server first. |
+| Claude Code CLI / Codex CLI | Your existing subscription | Uses the `claude` / `codex` login. Runs headless and read-only in an empty temp folder. |
+
+Default routing: recap and chat go to Gemini; without a Gemini key (or on a rate limit/outage) they fall back to the Claude Code CLI. Model IDs change often: use **Load models** to pick from what the provider offers.
 
 ## Customising
 
@@ -211,3 +255,4 @@ __pycache__/
 ## License
 
 Personal use. Respect the copyright and terms of the platforms and the lecture materials you process.
+# transkripu
