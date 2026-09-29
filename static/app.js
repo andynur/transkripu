@@ -37,7 +37,7 @@
       "create.dropHint": "MP4, MOV, MKV, MP3, M4A, WAV, etc.",
       "create.dropReplace": "{size} · click to replace",
       "create.urlLabel": "Video URL",
-      "create.urlHelp": "Only the audio track is downloaded.",
+      "create.urlHelp": "Only the audio track is downloaded. Paste several URLs, one per line, to queue them all.",
       "create.cookiesLabel": "Use browser sign-in",
       "create.cookiesNone": "No (public video)",
       "create.cookiesHelp": "For videos that require login, e.g. your campus LMS.",
@@ -127,6 +127,109 @@
       "flag.copied": "Text copied", "flag.copiedDesc": "{n} segments copied to clipboard",
       "flag.cancelled": "Cancelled", "flag.requeued": "Queued again", "flag.deleted": "Deleted",
       "flag.actionFailed": "Action failed", "flag.connect": "Cannot reach the server",
+      "recap.title": "AI recap",
+      "recap.intro": "Turn this transcript into study notes: summary, key points with timestamps, terms, action items and review questions.",
+      "ai.using": "Uses {provider}", "ai.change": "Change in AI settings",
+      "recap.generate": "Generate recap", "recap.regenerate": "Regenerate", "recap.retry": "Try again",
+      "recap.regenerateIn": "Regenerate in {lang}",
+      "ai.lang": "Output language (default: language of the recording)",
+      "recap.running": "Writing the recap… this usually takes 20–90 seconds.",
+      "stage.recap_map": "Long transcript: reading it in parts… {pct}%",
+      "stage.recap_reduce": "Combining the notes into a recap…",
+      "recap.copy": "Copy", "recap.download": "Download .md",
+      "recap.failed": "Recap failed",
+      "recap.meta": "Written by {provider} · {model} in {d}. Check important facts against the transcript.",
+      "recap.chunks": "Read in {n} parts.", "ai.fallback": "fallback",
+      "recap.jump": "Play from {t}",
+      "flag.recapDone": "Recap ready", "flag.recapFailed": "Recap failed", "flag.recapCopied": "Recap copied",
+      "err.recap_not_ready": "The transcript is not finished yet.",
+      "err.recap_running": "A recap is already being generated.",
+      "err.recap_failed": "Something went wrong while writing the recap.",
+      "err.recap_interrupted": "The recap stopped because the server was shut down. Try again.",
+      "chat.title": "Ask about this recording",
+      "chat.intro": "Ask anything about this transcript. The AI answers from the transcript (and the recap, if there is one) and cites timestamps you can click.",
+      "chat.s1": "What is the main idea, in simple words?",
+      "chat.s2": "List the 3 most important takeaways.",
+      "chat.s3": "Quiz me with 3 questions, then check my answers.",
+      "chat.placeholder": "Ask a question…", "chat.send": "Send", "chat.copy": "Copy",
+      "chat.clear": "Clear chat", "chat.confirmClear": "Delete the whole chat for this transcript?",
+      "chat.thinking": "Thinking…", "chat.failed": "No answer", "chat.stop": "Stop",
+      "chat.help": "Enter to send · Shift+Enter for a new line · answers in {lang} · {provider}",
+      "chat.excerpt": "partial context", "chat.stopped": "stopped",
+      "flag.chatFailed": "Could not send", "flag.chatCopied": "Answer copied",
+      "err.empty_message": "Type a question first.",
+      "err.message_too_long": "Questions can be at most 4000 characters.",
+      "err.chat_not_ready": "The transcript is not finished yet.",
+      "err.chat_busy": "The previous answer is still being written.",
+      "err.chat_failed": "Something went wrong while answering.",
+
+      "settings.open": "AI settings", "settings.title": "AI settings", "settings.meta": "Recap & chat",
+      "settings.routing": "Routing",
+      "settings.routingHelp": "Which provider writes recaps and answers chat. If it can't (no key, rate limit, offline), the fallback takes over.",
+      "settings.providers": "Providers",
+      "settings.providersHelp": "API keys are stored only on this Mac (data/config.json) and are never shown again.",
+      "settings.recap": "Recap", "settings.chat": "Chat",
+      "settings.provider": "Provider", "settings.model": "Model", "settings.fallback": "Fallback",
+      "settings.fallbackModel": "Fallback model", "settings.none": "None",
+      "settings.modelDefault": "Default: {model}", "settings.modelCli": "CLI default",
+      "settings.baseUrl": "Base URL", "settings.apiKey": "API key", "settings.apiKeyOptional": "API key (optional)",
+      "settings.keyNew": "Paste API key", "settings.keySaved": "Saved key ••••{last4}", "settings.keySavedShort": "Key saved",
+      "settings.keyEnv": "Key from environment variable {name}", "settings.keyRemove": "Remove key",
+      "settings.show": "Show", "settings.hide": "Hide",
+      "settings.loadModels": "Load models", "settings.modelsLoaded": "{n} models loaded",
+      "settings.maxTokens": "Max input tokens",
+      "settings.maxTokensHelp": "Longer transcripts are recapped in parts and chat uses the best-matching excerpts. Empty = no limit.",
+      "settings.test": "Test", "settings.testFailed": "Failed", "settings.testOk": "Connected · {ms} ms", "settings.saved": "Saved",
+      "settings.usedFor": "Used for: {tasks}", "settings.urlSumopod": "Copy from the SumoPod dashboard",
+      "pstatus.ready": "Ready", "pstatus.local": "Local", "pstatus.no_key": "No key", "pstatus.no_url": "No URL",
+      "pstatus.not_installed": "Not installed",
+      "provider.gemini": "Google Gemini", "provider.groq": "Groq", "provider.sumopod": "SumoPod",
+      "provider.ollama": "Ollama", "provider.lmstudio": "LM Studio", "provider.custom": "Custom (OpenAI-compatible)",
+      "provider.claude_cli": "Claude Code CLI", "provider.codex_cli": "Codex CLI",
+      "help.gemini": "Free tier with a large context: a 1-hour lecture fits in one request. On the free tier, Google may use the data you send to improve its products.",
+      "help.groq": "Fast. The free tier allows about 8K tokens per minute, so long recaps run in parts and may pause between requests.",
+      "help.sumopod": "Paid in IDR (QRIS).",
+      "help.ollama": "Offline on this Mac. Start Ollama and pull the model first.",
+      "help.lmstudio": "Offline on this Mac. Start LM Studio's local server; an empty model uses the loaded one.",
+      "help.custom": "Any OpenAI-compatible /chat/completions endpoint.",
+      "help.claude_cli": "Uses your Claude Code login and plan. Runs with no tools, in an empty temporary folder.",
+      "help.codex_cli": "Uses your Codex login and plan. Runs in a read-only sandbox, in an empty temporary folder.",
+      "err.llm_no_key": "No API key set for this provider. Add one in AI settings.",
+      "err.llm_no_url": "The provider has no base URL. Set it in AI settings.",
+      "err.llm_auth": "The provider rejected the API key. Check it in AI settings.",
+      "err.llm_rate_limited": "Rate limit reached. Wait a moment, or pick another provider or a fallback.",
+      "err.llm_context_too_long": "The transcript is too long for this model. Set “Max input tokens” in AI settings or pick a model with a larger context.",
+      "err.llm_unreachable": "Cannot reach the provider. Check the base URL and your connection (is Ollama / LM Studio running?).",
+      "err.llm_server_error": "The provider had a server error. Try again later.",
+      "err.llm_cli_missing": "This CLI is not installed. Install it, then click “Check again”.",
+      "err.llm_cli_failed": "The CLI returned an error. Make sure you are logged in (run it once in Terminal).",
+      "err.llm_timeout": "The model did not answer in time. Try again.",
+      "err.llm_bad_response": "The provider sent an unexpected answer.",
+      "err.llm_model_not_found": "Model not found. Pick one with “Load models”.",
+      "err.unknown_provider": "Unknown provider.", "err.invalid_settings": "Invalid settings.",
+
+      "create.dropMany": "{n} files selected",
+      "create.dropManyHint": "{size} in total · click to replace",
+      "create.uploadingMany": "Uploading {i}/{n} · {pct}%",
+      "create.condition": "Reduce repeated lines",
+      "create.conditionHelp": "Turn on if long or quiet recordings repeat the same sentence. Wording can be slightly less consistent.",
+      "flag.queuedMany": "{n} jobs added to queue",
+      "history.queuePos": "#{n} in queue",
+      "eta.left": "~{d} left",
+      "eta.speed": "{x}× real time",
+      "drawer.disk": "{size} on disk",
+      "drawer.edited": "edited",
+      "drawer.editHint": "Double-click a line to correct it. Enter saves, Esc cancels.",
+      "drawer.shortcuts": "K or Space: play/pause · J / L: back / forward 5 s.",
+      "drawer.mediaRemoved": "The source media was deleted to save space. The transcript is kept.",
+      "act.deleteMedia": "Delete media file",
+      "act.confirmDeleteMedia": "Delete the media file of “{title}” ({size})? The transcript, recap and chat stay.",
+      "act.confirmDeleteMediaUpload": "You can no longer transcribe it again.",
+      "flag.mediaDeleted": "Media file deleted", "flag.segSaved": "Line saved",
+      "err.media_removed": "The source file was deleted, so this job cannot run again.",
+      "err.empty_segment": "A line cannot be empty.",
+      "err.segment_too_long": "A line can be at most 2000 characters.",
+      "err.edit_not_ready": "The transcript is not finished yet.",
 
       "unit.sec": "{n}s", "unit.min": "{n} min", "unit.hour": "{h} h {m} min", "unit.lt1": "<1s",
     },
@@ -156,7 +259,7 @@
       "create.dropHint": "MP4, MOV, MKV, MP3, M4A, WAV, dll.",
       "create.dropReplace": "{size} · klik untuk mengganti",
       "create.urlLabel": "URL video",
-      "create.urlHelp": "Hanya audionya yang diunduh.",
+      "create.urlHelp": "Hanya audionya yang diunduh. Tempel beberapa URL, satu per baris, untuk mengantrekan semuanya.",
       "create.cookiesLabel": "Pakai sesi login browser",
       "create.cookiesNone": "Tidak (video publik)",
       "create.cookiesHelp": "Untuk video yang perlu login, misalnya LMS kampus.",
@@ -246,6 +349,109 @@
       "flag.copied": "Teks disalin", "flag.copiedDesc": "{n} segmen disalin ke clipboard",
       "flag.cancelled": "Dibatalkan", "flag.requeued": "Masuk antrean lagi", "flag.deleted": "Dihapus",
       "flag.actionFailed": "Aksi gagal", "flag.connect": "Tidak bisa terhubung ke server",
+      "recap.title": "Rekap AI",
+      "recap.intro": "Ubah transkrip ini menjadi catatan belajar: ringkasan, poin penting dengan timestamp, istilah, tugas, dan pertanyaan latihan.",
+      "ai.using": "Memakai {provider}", "ai.change": "Ubah di Pengaturan AI",
+      "recap.generate": "Buat rekap", "recap.regenerate": "Buat ulang", "recap.retry": "Coba lagi",
+      "recap.regenerateIn": "Buat ulang dalam {lang}",
+      "ai.lang": "Bahasa hasil (default: bahasa rekaman)",
+      "recap.running": "Sedang menulis rekap… biasanya 20–90 detik.",
+      "stage.recap_map": "Transkrip panjang: dibaca per bagian… {pct}%",
+      "stage.recap_reduce": "Menggabungkan catatan menjadi rekap…",
+      "recap.copy": "Salin", "recap.download": "Unduh .md",
+      "recap.failed": "Rekap gagal",
+      "recap.meta": "Ditulis oleh {provider} · {model} dalam {d}. Cek fakta penting dengan transkripnya.",
+      "recap.chunks": "Dibaca dalam {n} bagian.", "ai.fallback": "cadangan",
+      "recap.jump": "Putar dari {t}",
+      "flag.recapDone": "Rekap selesai", "flag.recapFailed": "Rekap gagal", "flag.recapCopied": "Rekap disalin",
+      "err.recap_not_ready": "Transkrip belum selesai.",
+      "err.recap_running": "Rekap sedang dibuat.",
+      "err.recap_failed": "Terjadi kesalahan saat menulis rekap.",
+      "err.recap_interrupted": "Rekap terhenti karena server ditutup. Coba lagi.",
+      "chat.title": "Tanya tentang rekaman ini",
+      "chat.intro": "Tanyakan apa saja tentang transkrip ini. AI menjawab berdasarkan transkrip (dan rekap, jika ada) serta menyertakan timestamp yang bisa diklik.",
+      "chat.s1": "Apa ide utamanya, dengan bahasa sederhana?",
+      "chat.s2": "Sebutkan 3 poin terpenting.",
+      "chat.s3": "Beri saya kuis 3 soal, lalu periksa jawaban saya.",
+      "chat.placeholder": "Tulis pertanyaan…", "chat.send": "Kirim", "chat.copy": "Salin",
+      "chat.clear": "Hapus chat", "chat.confirmClear": "Hapus seluruh chat untuk transkrip ini?",
+      "chat.thinking": "Sedang berpikir…", "chat.failed": "Tidak ada jawaban", "chat.stop": "Hentikan",
+      "chat.help": "Enter untuk kirim · Shift+Enter untuk baris baru · jawaban dalam {lang} · {provider}",
+      "chat.excerpt": "konteks sebagian", "chat.stopped": "dihentikan",
+      "flag.chatFailed": "Gagal mengirim", "flag.chatCopied": "Jawaban disalin",
+      "err.empty_message": "Tulis pertanyaan terlebih dahulu.",
+      "err.message_too_long": "Pertanyaan maksimal 4000 karakter.",
+      "err.chat_not_ready": "Transkrip belum selesai.",
+      "err.chat_busy": "Jawaban sebelumnya masih ditulis.",
+      "err.chat_failed": "Terjadi kesalahan saat menjawab.",
+
+      "settings.open": "Pengaturan AI", "settings.title": "Pengaturan AI", "settings.meta": "Rekap & chat",
+      "settings.routing": "Rute",
+      "settings.routingHelp": "Provider yang menulis rekap dan menjawab chat. Jika gagal (tanpa key, kena limit, offline), cadangannya yang dipakai.",
+      "settings.providers": "Provider",
+      "settings.providersHelp": "API key hanya disimpan di Mac ini (data/config.json) dan tidak pernah ditampilkan lagi.",
+      "settings.recap": "Rekap", "settings.chat": "Chat",
+      "settings.provider": "Provider", "settings.model": "Model", "settings.fallback": "Cadangan",
+      "settings.fallbackModel": "Model cadangan", "settings.none": "Tidak ada",
+      "settings.modelDefault": "Default: {model}", "settings.modelCli": "Default CLI",
+      "settings.baseUrl": "Base URL", "settings.apiKey": "API key", "settings.apiKeyOptional": "API key (opsional)",
+      "settings.keyNew": "Tempel API key", "settings.keySaved": "Key tersimpan ••••{last4}", "settings.keySavedShort": "Key tersimpan",
+      "settings.keyEnv": "Key dari variabel lingkungan {name}", "settings.keyRemove": "Hapus key",
+      "settings.show": "Lihat", "settings.hide": "Sembunyikan",
+      "settings.loadModels": "Muat model", "settings.modelsLoaded": "{n} model dimuat",
+      "settings.maxTokens": "Maks. token input",
+      "settings.maxTokensHelp": "Transkrip yang lebih panjang direkap per bagian dan chat memakai potongan yang paling relevan. Kosong = tanpa batas.",
+      "settings.test": "Tes", "settings.testFailed": "Gagal", "settings.testOk": "Terhubung · {ms} ms", "settings.saved": "Tersimpan",
+      "settings.usedFor": "Dipakai untuk: {tasks}", "settings.urlSumopod": "Salin dari dashboard SumoPod",
+      "pstatus.ready": "Siap", "pstatus.local": "Lokal", "pstatus.no_key": "Tanpa key", "pstatus.no_url": "Tanpa URL",
+      "pstatus.not_installed": "Belum terpasang",
+      "provider.gemini": "Google Gemini", "provider.groq": "Groq", "provider.sumopod": "SumoPod",
+      "provider.ollama": "Ollama", "provider.lmstudio": "LM Studio", "provider.custom": "Kustom (kompatibel OpenAI)",
+      "provider.claude_cli": "Claude Code CLI", "provider.codex_cli": "Codex CLI",
+      "help.gemini": "Tier gratis dengan konteks besar: kuliah 1 jam muat dalam satu permintaan. Di tier gratis, Google dapat memakai data yang dikirim untuk meningkatkan produknya.",
+      "help.groq": "Cepat. Tier gratis sekitar 8K token per menit, jadi rekap panjang dibuat per bagian dan bisa jeda di antara permintaan.",
+      "help.sumopod": "Berbayar dalam Rupiah (QRIS).",
+      "help.ollama": "Offline di Mac ini. Jalankan Ollama dan unduh modelnya dulu.",
+      "help.lmstudio": "Offline di Mac ini. Jalankan server lokal LM Studio; model kosong = model yang sedang dimuat.",
+      "help.custom": "Endpoint /chat/completions apa pun yang kompatibel dengan OpenAI.",
+      "help.claude_cli": "Memakai login dan paket Claude Code kamu. Berjalan tanpa tool, di folder sementara yang kosong.",
+      "help.codex_cli": "Memakai login dan paket Codex kamu. Berjalan di sandbox read-only, di folder sementara yang kosong.",
+      "err.llm_no_key": "Provider ini belum punya API key. Tambahkan di Pengaturan AI.",
+      "err.llm_no_url": "Provider ini belum punya base URL. Isi di Pengaturan AI.",
+      "err.llm_auth": "API key ditolak provider. Periksa di Pengaturan AI.",
+      "err.llm_rate_limited": "Kena batas pemakaian. Tunggu sebentar, atau pilih provider lain atau cadangan.",
+      "err.llm_context_too_long": "Transkrip terlalu panjang untuk model ini. Isi “Maks. token input” di Pengaturan AI atau pilih model dengan konteks lebih besar.",
+      "err.llm_unreachable": "Provider tidak bisa dihubungi. Periksa base URL dan koneksi (Ollama / LM Studio sudah jalan?).",
+      "err.llm_server_error": "Server provider sedang error. Coba lagi nanti.",
+      "err.llm_cli_missing": "CLI ini belum terpasang. Pasang dulu, lalu klik “Periksa ulang”.",
+      "err.llm_cli_failed": "CLI mengembalikan error. Pastikan sudah login (jalankan sekali di Terminal).",
+      "err.llm_timeout": "Model tidak menjawab tepat waktu. Coba lagi.",
+      "err.llm_bad_response": "Provider mengirim jawaban yang tidak terduga.",
+      "err.llm_model_not_found": "Model tidak ditemukan. Pilih lewat “Muat model”.",
+      "err.unknown_provider": "Provider tidak dikenal.", "err.invalid_settings": "Pengaturan tidak valid.",
+
+      "create.dropMany": "{n} file dipilih",
+      "create.dropManyHint": "Total {size} · klik untuk mengganti",
+      "create.uploadingMany": "Mengunggah {i}/{n} · {pct}%",
+      "create.condition": "Kurangi kalimat berulang",
+      "create.conditionHelp": "Aktifkan bila rekaman panjang atau banyak hening mengulang kalimat yang sama. Pilihan kata bisa sedikit kurang konsisten.",
+      "flag.queuedMany": "{n} tugas masuk antrean",
+      "history.queuePos": "Antrean ke-{n}",
+      "eta.left": "sisa ~{d}",
+      "eta.speed": "{x}× waktu nyata",
+      "drawer.disk": "{size} di disk",
+      "drawer.edited": "diedit",
+      "drawer.editHint": "Klik dua kali pada baris untuk memperbaikinya. Enter menyimpan, Esc membatalkan.",
+      "drawer.shortcuts": "K atau Spasi: putar/jeda · J / L: mundur / maju 5 dtk.",
+      "drawer.mediaRemoved": "File media sumber sudah dihapus untuk menghemat ruang. Transkrip tetap tersimpan.",
+      "act.deleteMedia": "Hapus file media",
+      "act.confirmDeleteMedia": "Hapus file media “{title}” ({size})? Transkrip, rekap, dan chat tetap ada.",
+      "act.confirmDeleteMediaUpload": "Tugas ini tidak bisa ditranskrip ulang lagi.",
+      "flag.mediaDeleted": "File media dihapus", "flag.segSaved": "Baris disimpan",
+      "err.media_removed": "File sumber sudah dihapus, jadi tugas ini tidak bisa dijalankan lagi.",
+      "err.empty_segment": "Baris tidak boleh kosong.",
+      "err.segment_too_long": "Satu baris maksimal 2000 karakter.",
+      "err.edit_not_ready": "Transkrip belum selesai.",
 
       "unit.sec": "{n} dtk", "unit.min": "{n} mnt", "unit.hour": "{h} j {m} mnt", "unit.lt1": "<1 dtk",
     },
@@ -281,9 +487,10 @@
   const ACTIVE = new Set(["queued", "downloading", "transcribing"]);
 
   const state = {
-    tab: "file", file: null, jobs: [], models: [], languages: [],
+    tab: "file", files: [], jobs: [], models: [], languages: [],
     openId: null, detail: null, renderedSegKey: "", renderedSegCount: 0, segCache: null, mediaFor: null,
-    historyQuery: "", statusFilter: "all", segQuery: "", activeSeg: -1, health: null,
+    historyQuery: "", statusFilter: "all", segQuery: "", activeSeg: -1, health: null, chat: null, recapLang: null, chatLang: null,
+    settings: null, settingsOpen: false,
   };
 
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -303,7 +510,7 @@
     const m = Math.round(sec / 60);
     return m >= 60 ? t("unit.hour", { h: Math.floor(m / 60), m: m % 60 }) : t("unit.min", { n: m });
   };
-  const fmtSize = (b) => (b > 1e9 ? (b / 1e9).toFixed(1) + " GB" : (b / 1e6).toFixed(1) + " MB");
+  const fmtSize = (b) => (b >= 1e9 ? (b / 1e9).toFixed(1) + " GB" : b >= 1e6 ? (b / 1e6).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1e3)) + " KB");
 
   const LOZENGE_KIND = { queued: "", downloading: "inprogress", transcribing: "inprogress", done: "success", error: "removed", cancelled: "moved" };
   const lozenge = (status) => {
@@ -358,7 +565,9 @@
       $("#dActions").dataset.key = "";
       state.renderedSegKey = "";
       renderDetail(state.detail);
+      renderChat(true);
     }
+    if (state.settingsOpen) renderSettings();
   }
 
   function setTheme(theme, persist = true) {
@@ -406,7 +615,8 @@
 
   // ---------------------------------------------------------------- form preferences
   function savePrefs() {
-    storage.set(LS_PREFS, JSON.stringify({ model: $("#modelInput").value, language: $("#langInput").value, prompt: $("#promptInput").value }));
+    storage.set(LS_PREFS, JSON.stringify({ model: $("#modelInput").value, language: $("#langInput").value, prompt: $("#promptInput").value,
+      noCondition: $("#conditionInput").checked }));
   }
   function restorePrefs() {
     let p = {};
@@ -415,6 +625,7 @@
     if (p.language && state.languages.includes(p.language)) $("#langInput").value = p.language;
     else $("#langInput").value = "auto";
     if (p.prompt) $("#promptInput").value = p.prompt;
+    $("#conditionInput").checked = !!p.noCondition;
   }
   function updateModelHint() {
     const key = MODEL_KEYS[$("#modelInput").value];
@@ -427,12 +638,13 @@
     $$(".tab").forEach((el) => el.classList.toggle("is-active", el.dataset.tab === tab));
     $$(".tabpanel").forEach((p) => (p.hidden = p.dataset.panel !== tab));
   }
-  function setFile(f) { state.file = f; renderFile(); }
+  function setFiles(list) { state.files = [...(list || [])]; renderFile(); }
   function renderFile() {
-    const f = state.file;
-    $("#dropzone").classList.toggle("has-file", !!f);
-    $("#dropTitle").innerHTML = f ? esc(f.name) : t("create.dropTitle");
-    $("#dropHint").textContent = f ? t("create.dropReplace", { size: fmtSize(f.size) }) : t("create.dropHint");
+    const fs = state.files, size = fs.reduce((n, f) => n + f.size, 0);
+    $("#dropzone").classList.toggle("has-file", fs.length > 0);
+    $("#dropTitle").innerHTML = fs.length > 1 ? esc(t("create.dropMany", { n: fs.length })) : fs.length ? esc(fs[0].name) : t("create.dropTitle");
+    $("#dropHint").textContent = fs.length > 1 ? t("create.dropManyHint", { size: fmtSize(size) })
+      : fs.length ? t("create.dropReplace", { size: fmtSize(size) }) : t("create.dropHint");
   }
   function resetSubmit() {
     const btn = $("#submitBtn");
@@ -440,64 +652,120 @@
     btn.textContent = t("create.submit");
   }
 
-  function submit(e) {
+  /** POST one job (XHR, not fetch, so large uploads report progress). Resolves with the job. */
+  function postJob(fd, onProgress) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/jobs");
+      xhr.upload.onprogress = (ev) => { if (ev.lengthComputable) onProgress(Math.round((ev.loaded / ev.total) * 100)); };
+      xhr.onload = () => {
+        let data = {};
+        try { data = JSON.parse(xhr.responseText); } catch {}
+        if (xhr.status >= 300) reject(new Error(errorText(data.error_code, data.error) || `HTTP ${xhr.status}`));
+        else resolve(data);
+      };
+      xhr.onerror = () => reject(Object.assign(new Error(t("flag.serverDownDesc")), { down: true }));
+      xhr.send(fd);
+    });
+  }
+
+  /** One job per selected file or per pasted URL, posted one after another. */
+  async function submit(e) {
     e.preventDefault();
-    const fd = new FormData();
-    fd.append("model", $("#modelInput").value);
-    fd.append("language", $("#langInput").value);
-    fd.append("prompt", $("#promptInput").value);
+    const form = () => {
+      const fd = new FormData();
+      fd.append("model", $("#modelInput").value);
+      fd.append("language", $("#langInput").value);
+      fd.append("prompt", $("#promptInput").value);
+      if ($("#conditionInput").checked) fd.append("condition_previous", "0");
+      return fd;
+    };
+    let items;
     if (state.tab === "file") {
-      if (!state.file) return flag("error", t("flag.noFile"), t("flag.noFileDesc"));
-      fd.append("file", state.file);
+      if (!state.files.length) return flag("error", t("flag.noFile"), t("flag.noFileDesc"));
+      items = state.files.map((f) => { const fd = form(); fd.append("file", f); return fd; });
     } else {
-      const url = $("#urlInput").value.trim();
-      if (!url) return flag("error", t("flag.noUrl"), t("flag.noUrlDesc"));
-      fd.append("url", url);
-      fd.append("cookies_browser", $("#cookiesInput").value);
+      const urls = $("#urlInput").value.split(/\s+/).filter(Boolean);
+      if (!urls.length) return flag("error", t("flag.noUrl"), t("flag.noUrlDesc"));
+      items = urls.map((u) => { const fd = form(); fd.append("url", u); fd.append("cookies_browser", $("#cookiesInput").value); return fd; });
     }
     savePrefs();
+    // Ask once, on a click, so a finished job can notify while the tab is in the background.
+    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission().catch(() => {});
 
     const btn = $("#submitBtn");
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner"></span> ${esc(t("create.sending"))}`;
-
-    // XHR (not fetch) so we get upload progress for large videos.
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/jobs");
-    xhr.upload.onprogress = (ev) => {
-      if (ev.lengthComputable && state.tab === "file") {
-        btn.innerHTML = `<span class="spinner"></span> ${esc(t("create.uploading", { pct: Math.round((ev.loaded / ev.total) * 100) }))}`;
+    const created = [];
+    for (const [i, fd] of items.entries()) {
+      try {
+        created.push(await postJob(fd, (pct) => {
+          if (state.tab !== "file") return;
+          const label = items.length > 1 ? t("create.uploadingMany", { i: i + 1, n: items.length, pct }) : t("create.uploading", { pct });
+          btn.innerHTML = `<span class="spinner"></span> ${esc(label)}`;
+        }));
+      } catch (err) {
+        flag("error", err.down ? t("flag.serverDown") : t("flag.createFailed"), err.message);
+        if (err.down) break;
       }
-    };
-    xhr.onload = () => {
-      resetSubmit();
-      let data = {};
-      try { data = JSON.parse(xhr.responseText); } catch {}
-      if (xhr.status >= 300) return flag("error", t("flag.createFailed"), errorText(data.error_code, data.error) || `HTTP ${xhr.status}`);
-      flag("success", t("flag.queued"), data.title);
-      setFile(null);
+    }
+    resetSubmit();
+    if (!created.length) return;
+    flag("success", created.length > 1 ? t("flag.queuedMany", { n: created.length }) : t("flag.queued"), created.length > 1 ? "" : created[0].title);
+    if (created.length === items.length) {
+      setFiles([]);
       $("#fileInput").value = "";
       $("#urlInput").value = "";
-      refreshJobs().then(() => openDrawer(data.id));
-    };
-    xhr.onerror = () => { resetSubmit(); flag("error", t("flag.serverDown"), t("flag.serverDownDesc")); };
-    xhr.send(fd);
+    }
+    await refreshJobs();
+    openDrawer(created[0].id);
   }
 
   // ---------------------------------------------------------------- history table
   const lastStatus = {};
+  const lastRecap = {};
+  let jobsEtag = null;
+  /** Poll the job list; an unchanged list comes back as 304 and is not re-rendered. */
   async function refreshJobs() {
-    const jobs = await api("/api/jobs");
+    const r = await fetch("/api/jobs", { cache: "no-store", headers: jobsEtag ? { "If-None-Match": jobsEtag } : {} });
+    if (r.status === 304) return;
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const jobs = await r.json();
+    jobsEtag = r.headers.get("ETag");
+    const tell = (kind, key, title) => { flag(kind, t(key), title); notify(t(key), title); };
     for (const j of jobs) {
       const prev = lastStatus[j.id];
       if (prev && prev !== j.status) {
-        if (j.status === "done") flag("success", t("flag.done"), j.title);
-        if (j.status === "error") flag("error", t("flag.failed"), j.title);
+        if (j.status === "done") tell("success", "flag.done", j.title);
+        if (j.status === "error") tell("error", "flag.failed", j.title);
       }
       lastStatus[j.id] = j.status;
+      if (lastRecap[j.id] === "running" && j.recap_status === "done") tell("success", "flag.recapDone", j.title);
+      if (lastRecap[j.id] === "running" && j.recap_status === "error") tell("error", "flag.recapFailed", j.title);
+      lastRecap[j.id] = j.recap_status;
     }
     state.jobs = jobs;
     renderJobs();
+  }
+
+  /** System notification, only while the tab is in the background (and allowed). */
+  function notify(title, body) {
+    if (!document.hidden || !("Notification" in window) || Notification.permission !== "granted") return;
+    try { new Notification(title, { body, tag: "transkripu" }); } catch {}
+  }
+
+  /** "~4 min left · 3.1× real time" for a transcribing job, from its progress so far. */
+  function eta(j) {
+    if (j.status !== "transcribing" || !j.transcribe_started || !j.duration || !j.stage_pct) return "";
+    const frac = j.stage_pct / 100, elapsed = Date.now() / 1000 - j.transcribe_started;
+    if (frac < 0.02 || frac >= 1 || elapsed < 5) return "";
+    return `${t("eta.left", { d: fmtDur((elapsed * (1 - frac)) / frac) })} · ${t("eta.speed", { x: ((frac * j.duration) / elapsed).toFixed(1) })}`;
+  }
+
+  /** Queue position (1 = next) of each queued job, in the order the worker takes them. */
+  function queuePositions(jobs) {
+    const q = jobs.filter((j) => j.status === "queued").sort((a, b) => (a.queued_at || a.created) - (b.queued_at || b.created));
+    return Object.fromEntries(q.map((j, i) => [j.id, i + 1]));
   }
 
   const ICON_URL = '<svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M3.9 12a3.1 3.1 0 0 1 3.1-3.1h4V7H7a5 5 0 0 0 0 10h4v-1.9H7A3.1 3.1 0 0 1 3.9 12zM8 13h8v-2H8v2zm9-6h-4v1.9h4a3.1 3.1 0 0 1 0 6.2h-4V17h4a5 5 0 0 0 0-10z"/></svg>';
@@ -523,16 +791,53 @@
     // Show the running job's progress in the browser tab title.
     const running = state.jobs.find((j) => j.status === "transcribing" || j.status === "downloading");
     document.title = running ? `(${Math.round(running.progress || 0)}%) Transkripu` : "Transkripu";
-    $("#jobRows").innerHTML = jobs.map((j) => {
-      const isUrl = j.source === "url";
-      const pct = j.status === "done" ? 100 : Math.round(j.progress || 0);
-      const barCls = j.status === "done" ? "progress--done" : j.status === "error" ? "progress--error" : "";
-      const sub = [
-        t(isUrl ? "history.srcUrl" : "history.srcFile"),
-        j.duration ? fmtDur(j.duration) : "",
-        j.segments_count ? t("history.segments", { n: j.segments_count }) : "",
-      ].filter(Boolean).join(" · ");
-      return `<tr data-id="${esc(j.id)}" tabindex="0" class="${state.openId === j.id ? "is-selected" : ""}">
+    // Rows are patched, not rebuilt: progress/sub-line change in place, other rows keep focus and hover.
+    const pos = queuePositions(state.jobs);
+    const tbody = $("#jobRows");
+    const old = new Map($$("tr[data-id]", tbody).map((tr) => [tr.dataset.id, tr]));
+    let prev = null;
+    for (const j of jobs) {
+      const v = jobRow(j, pos[j.id]);
+      let tr = old.get(j.id);
+      old.delete(j.id);
+      if (!tr || tr._key !== v.key) {
+        const tmp = document.createElement("tbody");
+        tmp.innerHTML = v.html;
+        const fresh = tmp.firstElementChild;
+        fresh._key = v.key;
+        if (tr) {
+          const hadFocus = document.activeElement === tr;
+          tr.replaceWith(fresh);
+          if (hadFocus) fresh.focus();
+        }
+        tr = fresh;
+      } else {
+        $(".job-title__sub", tr).textContent = v.sub;
+        $(".progress__bar", tr).style.width = `${v.pct}%`;
+        $(".progress-cell > span", tr).textContent = `${v.pct}%`;
+      }
+      const at = prev ? prev.nextElementSibling : tbody.firstElementChild;
+      if (at !== tr) tbody.insertBefore(tr, at);
+      prev = tr;
+    }
+    old.forEach((tr) => tr.remove());
+  }
+
+  /** One history row: `key` covers everything except progress and the sub-line. */
+  function jobRow(j, queuePos) {
+    const isUrl = j.source === "url";
+    const pct = j.status === "done" ? 100 : Math.round(j.progress || 0);
+    const barCls = j.status === "done" ? "progress--done" : j.status === "error" ? "progress--error" : "";
+    const sub = [
+      t(isUrl ? "history.srcUrl" : "history.srcFile"),
+      j.duration ? fmtDur(j.duration) : "",
+      j.segments_count ? t("history.segments", { n: j.segments_count }) : "",
+      queuePos ? t("history.queuePos", { n: queuePos }) : "",
+      eta(j),
+    ].filter(Boolean).join(" · ");
+    const selected = state.openId === j.id;
+    const key = [lang, j.title, j.status, isUrl, selected, j.created].join("|");
+    const html = `<tr data-id="${esc(j.id)}" tabindex="0" class="${selected ? "is-selected" : ""}">
         <td><div class="job-title">
           <span class="job-title__icon job-title__icon--${isUrl ? "url" : "upload"}">${isUrl ? ICON_URL : ICON_FILE}</span>
           <span class="job-title__text"><span class="job-title__name" title="${esc(j.title)}">${esc(j.title)}</span><span class="job-title__sub">${esc(sub)}</span></span>
@@ -541,7 +846,7 @@
         <td><div class="progress-cell"><div class="progress ${barCls}"><div class="progress__bar" style="width:${pct}%"></div></div><span>${pct}%</span></div></td>
         <td><span class="date">${fmtDate(j.created)}</span></td>
       </tr>`;
-    }).join("");
+    return { key, html, sub, pct };
   }
 
   // ---------------------------------------------------------------- detail drawer
@@ -551,16 +856,24 @@
     Object.assign(state, { openId: id, renderedSegKey: "", renderedSegCount: 0, segCache: null, mediaFor: null, activeSeg: -1, segQuery: "" });
     $("#segSearch").value = "";
     $("#dActions").dataset.key = "";
+    $("#dRecap").dataset.key = "";
+    clearTimeout(chatTimer);
+    Object.assign(state, { chat: null, recapLang: null, chatLang: null });
+    $("#chatLang").dataset.key = "";
+    $("#chatInput").value = "";
     $("#blanket").hidden = false;
     requestAnimationFrame(() => $("#drawer").classList.add("is-open"));
     $("#drawer").setAttribute("aria-hidden", "false");
     $("#closeDrawer").focus();
     renderJobs();
     await refreshDetail();
+    loadChat();
   }
 
   function closeDrawer() {
     $("#dPlayer video, #dPlayer audio")?.pause();
+    clearTimeout(chatTimer);
+    state.chat = null;
     state.openId = null;
     state.detail = null;
     state.segCache = null;
@@ -572,20 +885,24 @@
     renderJobs();
   }
 
-  /** Fetch the open job. While it is transcribing, only new live segments are requested (?since=N). */
+  /** Fetch the open job. While it is transcribing, only new live segments are requested (?since=N);
+   *  once its final segments are cached (e.g. while a recap runs), none at all (?segments=0). */
   async function refreshDetail() {
     const id = state.openId;
     if (!id) return;
     const c = state.segCache;
     const since = c && c.id === id && c.live ? c.segs.length : 0;
+    const lean = !!c && c.id === id && !c.live && state.detail?.id === id && !ACTIVE.has(state.detail.status);
     let d;
     try {
-      d = await api(`/api/jobs/${encodeURIComponent(id)}${since ? `?since=${since}` : ""}`);
+      d = await api(`/api/jobs/${encodeURIComponent(id)}${since ? `?since=${since}` : lean ? "?segments=0" : ""}`);
     } catch {
       return closeDrawer();
     }
     if (state.openId !== id) return; // drawer switched while the request was in flight
-    if (d.segments_from > 0) {
+    if (d.segments == null) {
+      if (!lean || state.segCache !== c) { state.segCache = null; return refreshDetail(); }
+    } else if (d.segments_from > 0) {
       if (!c || c.segs.length !== d.segments_from) { state.segCache = null; return refreshDetail(); } // out of sync: refetch all
       c.segs.push(...d.segments);
     } else {
@@ -621,11 +938,14 @@
       `<span>· ${esc(langLabel)}</span>`,
       d.duration ? `<span>· ${esc(fmtDur(d.duration))}</span>` : "",
       d.elapsed ? `<span>· ${esc(t("drawer.processed", { d: fmtDur(d.elapsed) }))}</span>` : "",
+      d.disk_bytes ? `<span>· ${esc(t("drawer.disk", { size: fmtSize(d.disk_bytes) }))}</span>` : "",
+      d.edited ? `<span>· ${esc(t("drawer.edited"))}</span>` : "",
     ].join("") + timingLine(d.timings);
     $("#dTitle").textContent = d.title || "";
 
     // Action bar — only re-rendered when status/outputs change so an open dropdown survives polling.
-    const actionsKey = `${lang}:${d.status}:${(d.outputs || []).join()}`;
+    const actionsKey = `${lang}:${d.status}:${(d.outputs || []).join()}:${d.media || ""}`;
+    const canRerun = d.source !== "upload" || !!d.media;
     if ($("#dActions").dataset.key !== actionsKey) {
       const a = [];
       if (d.status === "done") {
@@ -634,11 +954,13 @@
           <div class="dropdown__menu" hidden>${["srt", "vtt", "txt", "json"].map((f) => downloadItem(d, f)).join("")}</div></div>`);
         a.push(`<button class="btn" data-act="copy">${esc(t("act.copy"))}</button>`);
         a.push(`<button class="btn" data-act="reveal">${esc(t("act.reveal"))}</button>`);
-        a.push(`<button class="btn" data-act="retry">${esc(t("act.rerun"))}</button>`);
+        if (canRerun) a.push(`<button class="btn" data-act="retry">${esc(t("act.rerun"))}</button>`);
       }
       if (ACTIVE.has(d.status)) a.push(`<button class="btn" data-act="cancel">${esc(t("act.cancel"))}</button>`);
-      if (d.status === "error" || d.status === "cancelled") a.push(`<button class="btn btn--primary" data-act="retry">${esc(t("act.retry"))}</button>`);
-      a.push(`<span style="flex:1"></span><button class="btn btn--subtle" data-act="delete">${esc(t("act.delete"))}</button>`);
+      if ((d.status === "error" || d.status === "cancelled") && canRerun) a.push(`<button class="btn btn--primary" data-act="retry">${esc(t("act.retry"))}</button>`);
+      a.push(`<span style="flex:1"></span>`);
+      if (d.media && !ACTIVE.has(d.status)) a.push(`<button class="btn btn--subtle" data-act="delete-media">${esc(t("act.deleteMedia"))}</button>`);
+      a.push(`<button class="btn btn--subtle" data-act="delete">${esc(t("act.delete"))}</button>`);
       $("#dActions").innerHTML = a.join("");
       $("#dActions").dataset.key = actionsKey;
     }
@@ -646,7 +968,8 @@
     const active = ACTIVE.has(d.status);
     $("#dProgress").hidden = !active;
     if (active) {
-      $("#dStage").textContent = stageText(d);
+      const pos = d.status === "queued" ? queuePositions(state.jobs)[d.id] : 0;
+      $("#dStage").textContent = [stageText(d), pos ? t("history.queuePos", { n: pos }) : "", eta(d)].filter(Boolean).join(" · ");
       $("#dPct").textContent = `${Math.round(d.progress || 0)}%`;
       $("#dBar").style.width = `${d.progress || 0}%`;
     }
@@ -660,12 +983,215 @@
       $("#dPlayer").innerHTML = `<${tag} controls preload="metadata" src="/api/jobs/${d.id}/media?v=${encodeURIComponent(d.media)}"></${tag}>`;
       const media = $("#dPlayer " + tag);
       media.addEventListener("timeupdate", () => highlightAt(media.currentTime));
-    } else if (!d.media) {
-      $("#dPlayer").innerHTML = "";
-      state.mediaFor = null;
+    } else if (!d.media && state.mediaFor !== `none:${lang}:${!!d.media_removed}`) {
+      state.mediaFor = `none:${lang}:${!!d.media_removed}`;
+      $("#dPlayer").innerHTML = d.media_removed ? `<p class="player__note">${esc(t("drawer.mediaRemoved"))}</p>` : "";
     }
+    $("#dSegHint").hidden = d.status !== "done";
 
+    renderRecap(d);
+    renderChat();
     renderSegments(d);
+  }
+
+  // ---------------------------------------------------------------- AI recap
+  const tsSeconds = (ts) => ts.split(":").reduce((acc, n) => acc * 60 + Number(n), 0);
+
+  /** Inline Markdown on escaped text: code, bold, italic, and [mm:ss] timestamps as seek buttons. */
+  function mdInline(text, maxSec) {
+    return esc(text)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[^*\w])\*(?!\s)([^*]+?)\*(?!\w)/g, "$1<em>$2</em>")
+      .replace(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g, (m, ts) => {
+        const sec = tsSeconds(ts);
+        // Drop timestamps past the end of the recording (the model can make them up).
+        return maxSec && sec > maxSec + 1 ? "" :
+          `<button type="button" class="ts" data-ts="${sec}" title="${esc(t("recap.jump", { t: ts }))}">${ts}</button>`;
+      });
+  }
+
+  /** Minimal Markdown → HTML for the recap: headings, bullet/numbered lists, paragraphs. */
+  function renderMarkdown(md, maxSec) {
+    const out = [];
+    let list = null, para = [];
+    const flush = () => { if (para.length) out.push(`<p>${mdInline(para.join(" "), maxSec)}</p>`); para = []; };
+    const closeList = () => { if (list) out.push(`</${list}>`); list = null; };
+    for (const raw of md.split("\n")) {
+      const line = raw.trim();
+      let m;
+      if (!line || /^(-{3,}|\*{3,})$/.test(line)) { flush(); closeList(); }
+      else if ((m = line.match(/^(#{1,4})\s+(.*)$/))) { flush(); closeList(); out.push(`<h${m[1].length + 2}>${mdInline(m[2], maxSec)}</h${m[1].length + 2}>`); }
+      else if ((m = line.match(/^(?:([-*+])|\d+[.)])\s+(.*)$/))) {
+        flush();
+        const tag = m[1] ? "ul" : "ol";
+        if (list !== tag) { closeList(); out.push(`<${tag}>`); list = tag; }
+        out.push(`<li>${mdInline(m[2], maxSec)}</li>`);
+      } else if (list && /^\s/.test(raw)) out[out.length - 1] = out[out.length - 1].replace(/<\/li>$/, ` ${mdInline(line, maxSec)}</li>`);
+      else { closeList(); para.push(line); }
+    }
+    flush(); closeList();
+    return out.join("");
+  }
+
+  /** Recap section of a finished job. Re-rendered only when its state changes. */
+  // Recap/chat output language: the user's pick in the drawer, else what the job used
+  // last, else the recording's language (ai_lang_default from the backend).
+  const recapLangOf = (d) => state.recapLang || (d.recap_status === "done" && d.recap_lang) || d.ai_lang_default || "en";
+  const chatLangOf = (d) => state.chatLang || d.chat_lang || d.ai_lang_default || "en";
+  const providerLabel = (id) => t("provider." + (id || "claude_cli")); // recaps from before Settings used Claude
+  const routeProvider = (task) => state.settings?.routing?.[task]?.provider;
+  // Error codes whose raw message (HTTP status, CLI output) helps the user; the others say it all.
+  const showErrorDetail = (code, detail) => !!detail && !["llm_no_key", "llm_no_url", "llm_cli_missing", "recap_interrupted"].includes(code);
+  const settingsLink = () => `<button type="button" class="btn btn--link" data-act="settings">${esc(t("ai.change"))}</button>`;
+  const aiLangToggle = (kind, cur) => `<div class="segmented" role="group" aria-label="${esc(t("ai.lang"))}" title="${esc(t("ai.lang"))}">${
+    ["en", "id"].map((c) => `<button type="button" data-ai-lang="${kind}:${c}" aria-pressed="${c === cur}" title="${esc(t("lang." + c))}">${c.toUpperCase()}</button>`).join("")}</div>`;
+
+  function renderRecap(d) {
+    const box = $("#dRecap");
+    box.hidden = d.status !== "done";
+    if (box.hidden) return;
+    const st = d.recap_status || "none";
+    const out = recapLangOf(d);
+    const key = `${lang}:${d.id}:${st}:${d.recap_created || ""}:${d.recap_error_code || ""}:${out}:${d.recap_stage || ""}:${d.recap_pct ?? ""}:${routeProvider("recap") || ""}`;
+    if (box.dataset.key === key) return;
+    box.dataset.key = key;
+
+    const actions = [];
+    let body = "";
+    if (st === "none") {
+      body = `<p class="recap__intro">${esc(t("recap.intro"))}</p>
+        <p class="recap__note">${routeProvider("recap") ? esc(t("ai.using", { provider: providerLabel(routeProvider("recap")) })) + " · " : ""}${settingsLink()}</p>`;
+      actions.push(`<button class="btn btn--primary btn--compact" data-act="recap">${esc(t("recap.generate"))}</button>`);
+    } else if (st === "running") {
+      body = `<p class="recap__running"><span class="spinner"></span> ${esc(d.recap_stage ? stageText({ stage: d.recap_stage, stage_pct: d.recap_pct }) : t("recap.running"))}</p>`;
+    } else if (st === "error") {
+      const detail = showErrorDetail(d.recap_error_code, d.recap_error) ? `<pre class="section-msg__pre">${esc(d.recap_error)}</pre>` : "";
+      body = `<div class="section-msg section-msg--error"><div><h4 class="section-msg__title">${esc(t("recap.failed"))}</h4>
+        <div class="section-msg__body">${esc(errorText(d.recap_error_code, d.recap_error))} ${settingsLink()}</div>${detail}</div></div>`;
+      actions.push(`<button class="btn btn--compact" data-act="recap">${esc(t("recap.retry"))}</button>`);
+    } else {
+      body = `<div class="md">${renderMarkdown(d.recap || "", d.duration)}</div>
+        <p class="recap__note">${esc([
+          t("recap.meta", { provider: providerLabel(d.recap_provider), model: d.recap_model || "", d: fmtDur(d.recap_seconds) }),
+          d.recap_chunks ? t("recap.chunks", { n: d.recap_chunks }) : "",
+          d.recap_fallback ? `(${t("ai.fallback")})` : "",
+        ].filter(Boolean).join(" "))}</p>`;
+      actions.push(`<button class="btn btn--compact" data-act="recap-copy">${esc(t("recap.copy"))}</button>`,
+        `<a class="btn btn--compact" href="/api/jobs/${d.id}/download/md">${esc(t("recap.download"))}</a>`,
+        out !== d.recap_lang
+          ? `<button class="btn btn--primary btn--compact" data-act="recap">${esc(t("recap.regenerateIn", { lang: t("lang." + out) }))}</button>`
+          : `<button class="btn btn--subtle btn--compact" data-act="recap">${esc(t("recap.regenerate"))}</button>`);
+    }
+    if (st !== "running") actions.unshift(aiLangToggle("recap", out));
+    $("#dRecapActions").innerHTML = actions.join("");
+    $("#dRecapBody").innerHTML = body;
+  }
+
+  // ---------------------------------------------------------------- chat
+  let chatTimer = null;
+  const seekTo = (sec) => {
+    const media = $("#dPlayer video, #dPlayer audio");
+    if (media) { media.currentTime = sec; media.play().catch(() => {}); }
+  };
+
+  /** Fetch the open job's chat; keeps polling (for the streamed answer) while Claude replies. */
+  async function loadChat() {
+    const id = state.openId;
+    clearTimeout(chatTimer);
+    if (!id) return;
+    // Only messages newer than the last one we have; `total` reveals a chat cleared elsewhere.
+    const have = state.chat?.id === id ? state.chat.messages : [];
+    const after = have.length ? have[have.length - 1].id : 0;
+    let c;
+    try { c = await api(`/api/jobs/${encodeURIComponent(id)}/chat${after ? `?after=${after}` : ""}`); } catch { return; }
+    if (state.openId !== id) return;
+    const messages = after ? [...have, ...c.messages] : c.messages;
+    if (after && messages.length !== c.total) { state.chat = null; return loadChat(); }
+    state.chat = { id, ...c, messages };
+    renderChat();
+    if (c.busy) chatTimer = setTimeout(loadChat, 600);
+  }
+
+  function chatItem(m, dur) {
+    if (m.role === "user") return `<li class="msg msg--user">${esc(m.text)}</li>`;
+    if (m.role === "error") {
+      const code = m.meta?.error_code;
+      return `<li class="msg msg--error"><b>${esc(t("chat.failed"))}</b> · ${esc(errorText(code, m.text))} ${code?.startsWith("llm_") ? settingsLink() : ""}
+        ${showErrorDetail(code, m.text) ? `<pre class="section-msg__pre">${esc(m.text)}</pre>` : ""}</li>`;
+    }
+    const meta = [
+      m.meta?.provider ? `${providerLabel(m.meta.provider)} · ${m.meta.model || ""}` : "",
+      m.meta?.fallback ? t("ai.fallback") : "",
+      m.meta?.excerpt ? t("chat.excerpt") : "",
+      m.meta?.stopped ? t("chat.stopped") : "",
+    ].filter(Boolean).join(" · ");
+    return `<li class="msg msg--assistant"><div class="md">${renderMarkdown(m.text, dur)}</div>
+      <div class="msg__actions"><span class="msg__meta">${esc(meta)}</span><button type="button" class="btn btn--subtle btn--compact" data-copy="${m.id}">${esc(t("chat.copy"))}</button></div></li>`;
+  }
+
+  /** Chat section of a finished job. Re-rendered only when messages or the streamed answer change. */
+  function renderChat(force = false) {
+    const d = state.detail, c = state.chat, box = $("#dChat");
+    box.hidden = !d || d.status !== "done";
+    if (box.hidden || !c || c.id !== d.id) return;
+    const last = c.messages[c.messages.length - 1];
+    const baseKey = `${lang}:${c.messages.length}:${last?.id ?? ""}:${c.busy}:${d.id}`;
+    const key = `${baseKey}:${(c.partial || "").length}`;
+    $("#chatSend").hidden = c.busy;
+    $("#chatStop").hidden = !c.busy;
+    const out = chatLangOf(d);
+    const helpKey = `${lang}:${out}:${routeProvider("chat") || ""}`;
+    if ($("#chatLang").dataset.key !== helpKey) {
+      $("#chatLang").dataset.key = helpKey;
+      $("#chatLang").innerHTML = aiLangToggle("chat", out);
+      $("#chatHelp").textContent = t("chat.help", { lang: t("lang." + out), provider: routeProvider("chat") ? providerLabel(routeProvider("chat")) : "" });
+    }
+    $("#chatClear").hidden = c.busy || !c.messages.length;
+    const list = $("#dChatList");
+    if (!force && list.dataset.key === key) return;
+    const grew = list.dataset.key !== undefined && list.dataset.key.split(":")[1] !== String(c.messages.length);
+    const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
+    list.dataset.key = key;
+    // While an answer streams in, only its own bubble changes: skip re-rendering the history.
+    const streaming = $(".is-streaming .md", list);
+    if (!force && streaming && c.busy && c.partial && list.dataset.base === baseKey) {
+      streaming.innerHTML = renderMarkdown(c.partial, d.duration);
+      if (nearBottom) list.scrollTop = list.scrollHeight;
+      return;
+    }
+    list.dataset.base = baseKey;
+
+    const items = c.messages.map((m) => chatItem(m, d.duration));
+    if (c.busy) {
+      items.push(c.partial
+        ? `<li class="msg msg--assistant is-streaming"><div class="md">${renderMarkdown(c.partial, d.duration)}</div></li>`
+        : `<li class="msg msg--typing"><span class="spinner"></span> ${esc(t("chat.thinking"))}</li>`);
+    }
+    if (!items.length) {
+      items.push(`<li class="chat__empty"><p>${esc(t("chat.intro"))}</p><div class="chips">${["chat.s1", "chat.s2", "chat.s3"]
+        .map((k) => `<button type="button" class="chip" data-ask="${esc(t(k))}">${esc(t(k))}</button>`).join("")}</div></li>`);
+    }
+    list.innerHTML = items.join("");
+    if (nearBottom || grew) list.scrollTop = list.scrollHeight;
+  }
+
+  async function sendChat(text) {
+    const d = state.detail;
+    text = (text || "").trim();
+    if (!d || !text || state.chat?.busy) return;
+    try {
+      const r = await api(`/api/jobs/${d.id}/chat`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text, lang: chatLangOf(d) }),
+      });
+      $("#chatInput").value = "";
+      if (state.chat?.id === d.id) Object.assign(state.chat, { messages: [...state.chat.messages, r.message], busy: true, partial: null });
+      renderChat();
+      $("#dChatList").scrollTop = $("#dChatList").scrollHeight;
+      chatTimer = setTimeout(loadChat, 600);
+    } catch (err) {
+      flag("error", t("flag.chatFailed"), err.message);
+    }
   }
 
   /** Escape `text` and wrap case-insensitive matches of `q` in <mark> (matching on raw text, not on entities). */
@@ -714,6 +1240,30 @@
     if (ACTIVE.has(d.status) && nearBottom) scroller.scrollTop = scroller.scrollHeight;
   }
 
+  async function saveSegment(li, save) {
+    const d = state.detail, i = +li.dataset.i, text = $(".seg__text", li);
+    const q = state.segQuery.trim().toLowerCase();
+    li.classList.remove("is-editing");
+    delete li.dataset.cancel;
+    text.removeAttribute("contenteditable");
+    const value = text.textContent.replace(/\s+/g, " ").trim(), before = d?.segments[i]?.text ?? "";
+    text.innerHTML = highlight(before, q);
+    if (!save || !value || value === before || !d) return;
+    text.innerHTML = highlight(value, q);
+    try {
+      const r = await api(`/api/jobs/${d.id}/segments/${i}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: value }),
+      });
+      d.segments[i].text = r.segment.text;
+      d.edited = Date.now() / 1000;
+      if (text.isConnected) text.innerHTML = highlight(r.segment.text, q);
+      flag("success", t("flag.segSaved"));
+    } catch (err) {
+      if (text.isConnected) text.innerHTML = highlight(before, q);
+      flag("error", t("flag.actionFailed"), err.message);
+    }
+  }
+
   function highlightAt(time) {
     const segs = state.detail?.segments || [];
     // Last segment starting at or before `time` (segments are sorted by start).
@@ -759,6 +1309,28 @@
           state.segCache = null;
           flag("info", t("flag.requeued"), d.title);
           break;
+        case "recap":
+          await api(`/api/jobs/${d.id}/recap`, {
+            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lang: recapLangOf(d) }),
+          });
+          setTimeout(tick, 1200); // switch polling to the fast interval
+          break;
+        case "settings":
+          closeDrawer();
+          openSettings();
+          return;
+        case "recap-copy":
+          await navigator.clipboard.writeText(d.recap || "");
+          flag("success", t("flag.recapCopied"), d.title);
+          return;
+        case "delete-media": {
+          const msg = t("act.confirmDeleteMedia", { title: d.title, size: fmtSize(d.media_bytes || 0) });
+          if (!confirm(d.source === "upload" ? `${msg} ${t("act.confirmDeleteMediaUpload")}` : msg)) return;
+          $("#dPlayer video, #dPlayer audio")?.pause();
+          await api(`/api/jobs/${d.id}/media`, { method: "DELETE" });
+          flag("success", t("flag.mediaDeleted"), d.title);
+          break;
+        }
         case "delete":
           if (!confirm(t("act.confirmDelete", { title: d.title }))) return;
           await api(`/api/jobs/${d.id}`, { method: "DELETE" });
@@ -773,25 +1345,251 @@
     }
   }
 
+  // ---------------------------------------------------------------- AI settings drawer
+  // Fields save on change (PUT /api/settings). Inputs are rendered once per opening so a
+  // save never wipes what the user is typing elsewhere; refreshSettingsMeta() updates the rest.
+  const ENV_KEYS = { gemini: "GEMINI_API_KEY", groq: "GROQ_API_KEY", sumopod: "SUMOPOD_API_KEY", custom: "OPENAI_COMPAT_API_KEY" };
+  const PSTATUS_KIND = { ready: "success", local: "inprogress", no_key: "moved", no_url: "moved", not_installed: "removed" };
+  const loadedModels = {}; // provider id -> model IDs from "Load models"
+  let settingsSaving = Promise.resolve();
+  let focusBeforeSettings = null;
+
+  async function loadSettings(refresh = false) {
+    state.settings = await api("/api/settings" + (refresh ? "?refresh=1" : ""));
+    if (state.detail) { $("#dRecap").dataset.key = ""; renderRecap(state.detail); renderChat(true); }
+  }
+
+  function saveSettings(patch) {
+    settingsSaving = api("/api/settings", {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch),
+    }).then((data) => { state.settings = data; refreshSettingsMeta(); flag("success", t("settings.saved")); })
+      .catch((err) => { flag("error", t("flag.actionFailed"), err.message); });
+    return settingsSaving;
+  }
+
+  async function openSettings() {
+    focusBeforeSettings = document.activeElement;
+    state.settingsOpen = true;
+    $("#blanket").hidden = false;
+    requestAnimationFrame(() => $("#settings").classList.add("is-open"));
+    $("#settings").setAttribute("aria-hidden", "false");
+    $("#closeSettings").focus();
+    try { await loadSettings(true); } catch (err) { flag("error", t("flag.connect"), err.message); }
+    renderSettings();
+  }
+
+  function closeSettings() {
+    state.settingsOpen = false;
+    $("#settings").classList.remove("is-open");
+    $("#settings").setAttribute("aria-hidden", "true");
+    focusBeforeSettings?.focus?.();
+    focusBeforeSettings = null;
+    setTimeout(() => { if (!state.openId && !state.settingsOpen) $("#blanket").hidden = true; }, 220);
+    if (state.detail) { $("#dRecap").dataset.key = ""; renderRecap(state.detail); renderChat(true); }
+  }
+
+  const modelPlaceholder = (id) => {
+    const p = state.settings?.providers?.[id];
+    if (!p) return "";
+    if (!p.model) return p.kind === "cli" ? t("settings.modelCli") : "";
+    return t("settings.modelDefault", { model: p.model });
+  };
+
+  // Model combobox: free text plus a list of known models. Not a <datalist>: browsers filter
+  // those by the current value, so a filled field would only offer itself.
+  const modelOptions = (id) => [...new Set([...(state.settings?.providers?.[id]?.suggest || []), ...(loadedModels[id] || [])])];
+  const comboInput = (label, attrs, value) => `<div class="combo"><input class="textfield" ${attrs} data-combo value="${esc(value)}"
+      role="combobox" aria-expanded="false" aria-autocomplete="list" aria-label="${esc(label)}" autocomplete="off" spellcheck="false">
+      <ul class="combo__menu" role="listbox" hidden></ul></div>`;
+
+  /** Show the model list under `input`: all models, or only matches once the user types. */
+  function openCombo(input, filter = false) {
+    const menu = input.nextElementSibling, cur = input.value.trim();
+    const q = filter ? cur.toLowerCase() : "";
+    const items = modelOptions(input.dataset.models).filter((m) => !q || m.toLowerCase().includes(q));
+    const active = items.indexOf(cur);
+    menu.innerHTML = items.map((m, i) => `<li role="option" class="combo__item${i === active ? " is-active" : ""}"
+      data-value="${esc(m)}" aria-selected="${m === cur}">${esc(m)}</li>`).join("");
+    menu.hidden = !items.length;
+    input.setAttribute("aria-expanded", String(!menu.hidden));
+    $(".is-active", menu)?.scrollIntoView({ block: "nearest" });
+  }
+  function closeCombo(input) {
+    input.nextElementSibling.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+  }
+  function pickCombo(input, value) {
+    input.value = value;
+    closeCombo(input);
+    input.dispatchEvent(new Event("change", { bubbles: true })); // saves like a typed value
+  }
+  function moveCombo(input, step) {
+    const menu = input.nextElementSibling;
+    if (menu.hidden) return openCombo(input);
+    const items = $$(".combo__item", menu);
+    if (!items.length) return;
+    const i = items.findIndex((el) => el.classList.contains("is-active"));
+    const next = items[(i + step + items.length) % items.length];
+    items.forEach((el) => el.classList.toggle("is-active", el === next));
+    next.scrollIntoView({ block: "nearest" });
+  }
+
+  function routeRow(task) {
+    const r = state.settings.routing[task];
+    const fb = r.fallback || { provider: "", model: "" };
+    const opts = (sel, none) => (none ? `<option value="">${esc(t("settings.none"))}</option>` : "") +
+      state.settings.order.map((id) => `<option value="${id}"${id === sel ? " selected" : ""}>${esc(providerLabel(id))}</option>`).join("");
+    const field = (label, control) => `<label class="field"><span class="field__label">${esc(label)}</span>${control}</label>`;
+    return `<div class="route" data-task="${task}">
+      <h4 class="route__title">${esc(t("settings." + task))}</h4>
+      <div class="route__grid">
+        ${field(t("settings.provider"), `<select class="select" data-r="provider">${opts(r.provider)}</select>`)}
+        ${field(t("settings.model"), comboInput(t("settings.model"), 'data-r="model"', r.model))}
+        ${field(t("settings.fallback"), `<select class="select" data-r="fb-provider">${opts(fb.provider, true)}</select>`)}
+        ${field(t("settings.fallbackModel"), comboInput(t("settings.fallbackModel"), 'data-r="fb-model"', fb.model))}
+      </div></div>`;
+  }
+
+  function providerPanel(id) {
+    const p = state.settings.providers[id];
+    const http = p.kind === "openai";
+    const keyField = http && (p.needs_key || id === "custom");
+    const field = (label, control, help = "") => `<div class="field"><label class="field__label">${esc(label)}</label>${control}${help ? `<p class="field__help">${help}</p>` : ""}</div>`;
+    return `<details class="provider" data-p="${id}">
+      <summary class="provider__summary">
+        <svg class="provider__chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10 17l5-5-5-5v10z"/></svg>
+        <span class="provider__name">${esc(providerLabel(id))}</span>
+        <span class="provider__used"></span>
+        <span class="provider__status"></span>
+      </summary>
+      <div class="provider__body">
+        <p class="provider__help">${esc(t("help." + id))}</p>
+        ${http ? field(t("settings.baseUrl"), `<input class="textfield" data-f="base_url" type="url" value="${esc(p.base_url === p.default_base_url ? "" : p.base_url)}"
+            placeholder="${esc(p.default_base_url || (id === "sumopod" ? t("settings.urlSumopod") : "https://…/v1"))}" autocomplete="off" spellcheck="false">`) : ""}
+        ${keyField ? field(t(p.needs_key ? "settings.apiKey" : "settings.apiKeyOptional"), `<div class="inline-field">
+            <input class="textfield" data-f="api_key" type="password" autocomplete="off" spellcheck="false">
+            <button type="button" class="btn" data-sact="toggle-key">${esc(t("settings.show"))}</button></div>`,
+            `<span class="provider__key"></span> <button type="button" class="btn btn--link" data-sact="remove-key" hidden>${esc(t("settings.keyRemove"))}</button>`) : ""}
+        ${field(t("settings.model"), `<div class="inline-field">
+            ${comboInput(t("settings.model"), `data-f="model" data-models="${id}"`, p.model === p.default_model ? "" : p.model)}
+            ${http ? `<button type="button" class="btn" data-sact="load-models">${esc(t("settings.loadModels"))}</button>` : ""}</div>`)}
+        ${http ? field(t("settings.maxTokens"), `<input class="textfield textfield--narrow" data-f="max_input_tokens" type="number" min="0" step="500" value="${p.max_input_tokens ?? ""}">`,
+            esc(t("settings.maxTokensHelp"))) : ""}
+        <div class="provider__footer">
+          <button type="button" class="btn" data-sact="test">${esc(t("settings.test"))}</button>
+          <span class="provider__result" aria-live="polite"></span>
+        </div>
+      </div>
+    </details>`;
+  }
+
+  function renderSettings() {
+    const s = state.settings;
+    if (!s) return;
+    const open = new Set($$("#sProviders details[open]").map((el) => el.dataset.p));
+    if (!open.size) open.add(s.routing.recap.provider);
+    $("#sRouting").innerHTML = ["recap", "chat"].map(routeRow).join("");
+    $("#sProviders").innerHTML = s.order.map(providerPanel).join("");
+    $$("#sProviders details").forEach((el) => (el.open = open.has(el.dataset.p)));
+    refreshSettingsMeta();
+  }
+
+  /** Status lozenges, key hints, "used for" and placeholders: everything a save can change. */
+  function refreshSettingsMeta() {
+    const s = state.settings;
+    if (!s || !state.settingsOpen) return;
+    for (const el of $$("#sProviders .provider")) {
+      const id = el.dataset.p, p = s.providers[id];
+      $(".provider__status", el).innerHTML = `<span class="lozenge lozenge--${PSTATUS_KIND[p.status] || ""}">${esc(t("pstatus." + p.status))}</span>`;
+      const used = ["recap", "chat"].filter((task) => s.routing[task].provider === id || s.routing[task].fallback?.provider === id);
+      $(".provider__used", el).textContent = used.length ? t("settings.usedFor", { tasks: used.map((x) => t("settings." + x)).join(", ") }) : "";
+      $("[data-f=model]", el).placeholder = modelPlaceholder(id);
+      const keyInput = $("[data-f=api_key]", el);
+      if (keyInput) {
+        const env = p.key_source === "env";
+        keyInput.disabled = env;
+        keyInput.placeholder = env ? "" : p.has_key ? (p.key_last4 ? `••••${p.key_last4}` : "••••") : t("settings.keyNew");
+        $(".provider__key", el).textContent = env ? t("settings.keyEnv", { name: ENV_KEYS[id] || "" })
+          : p.has_key ? (p.key_last4 ? t("settings.keySaved", { last4: p.key_last4 }) : t("settings.keySavedShort")) : "";
+        $("[data-sact=remove-key]", el).hidden = !(p.has_key && p.key_source === "file");
+      }
+    }
+    for (const row of $$("#sRouting .route")) {
+      const [prov, model, fbProv, fbModel] = ["provider", "model", "fb-provider", "fb-model"].map((k) => $(`[data-r=${k}]`, row));
+      model.placeholder = modelPlaceholder(prov.value);
+      model.dataset.models = prov.value;
+      fbModel.disabled = !fbProv.value;
+      fbModel.placeholder = fbProv.value ? modelPlaceholder(fbProv.value) : "";
+      fbModel.dataset.models = fbProv.value;
+    }
+  }
+
+  function saveRouting() {
+    const routing = {};
+    for (const row of $$("#sRouting .route")) {
+      const v = (k) => $(`[data-r=${k}]`, row).value.trim();
+      routing[row.dataset.task] = { provider: v("provider"), model: v("model"), fallback: v("fb-provider") ? { provider: v("fb-provider"), model: v("fb-model") } : null };
+    }
+    return saveSettings({ routing });
+  }
+
+  async function onSettingsAction(act, btn) {
+    const panel = btn.closest(".provider"), id = panel?.dataset.p;
+    if (act === "toggle-key") {
+      const input = $("[data-f=api_key]", panel);
+      input.type = input.type === "password" ? "text" : "password";
+      btn.textContent = t(input.type === "password" ? "settings.show" : "settings.hide");
+    } else if (act === "remove-key") {
+      await saveSettings({ providers: { [id]: { api_key: null } } });
+    } else if (act === "load-models") {
+      await settingsSaving;
+      btn.disabled = true;
+      try {
+        const r = await api(`/api/settings/models?provider=${encodeURIComponent(id)}`);
+        loadedModels[id] = r.models;
+        flag("info", t("settings.modelsLoaded", { n: r.models.length }), providerLabel(id));
+        const input = $("[data-f=model]", panel);
+        input.focus(); // focusin opens the full list
+        openCombo(input);
+      } catch (err) { flag("error", providerLabel(id), err.message); }
+      btn.disabled = false;
+    } else if (act === "test") {
+      await settingsSaving; // a field edited just before clicking Test is saved first
+      const out = $(`.provider[data-p="${id}"] .provider__result`);
+      btn.disabled = true;
+      out.innerHTML = `<span class="spinner"></span>`;
+      try {
+        const r = await api("/api/settings/test", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: id }),
+        });
+        out.innerHTML = r.ok
+          ? `<span class="lozenge lozenge--success">${esc(t("settings.testOk", { ms: r.latency_ms }))}</span> <span class="provider__model">${esc(r.model || "")}</span>`
+          : `<span class="lozenge lozenge--removed">${esc(t("settings.testFailed"))}</span> ${esc(errorText(r.error_code, r.error))}`;
+        if (!r.ok && showErrorDetail(r.error_code, r.error)) out.insertAdjacentHTML("beforeend", `<pre class="section-msg__pre">${esc(r.error)}</pre>`);
+      } catch (err) { out.textContent = err.message; }
+      btn.disabled = false;
+    }
+  }
+
   // ---------------------------------------------------------------- polling
-  // Polls while the tab is visible; a hidden tab stops polling and resumes on return.
+  // Polls fast while work runs. A hidden tab keeps polling the list slowly (tab-title progress,
+  // notifications) and skips the drawer; returning to the tab polls at once.
   let pollTimer = null;
   async function tick() {
     clearTimeout(pollTimer);
     pollTimer = null;
-    if (document.hidden) return;
     try {
       await refreshJobs();
-      if (state.openId && (!state.detail || ACTIVE.has(state.detail.status))) await refreshDetail();
+      if (!document.hidden && state.openId && (!state.detail || ACTIVE.has(state.detail.status) || state.detail.recap_status === "running")) await refreshDetail();
     } catch {}
-    const busy = state.jobs.some((j) => ACTIVE.has(j.status));
-    if (!document.hidden && !pollTimer) pollTimer = setTimeout(tick, busy ? 1200 : 5000);
+    const busy = state.jobs.some((j) => ACTIVE.has(j.status) || j.recap_status === "running");
+    if (!pollTimer) pollTimer = setTimeout(tick, document.hidden ? (busy ? 5000 : 30000) : busy ? 1200 : 5000);
   }
   document.addEventListener("visibilitychange", () => { if (!document.hidden) tick(); });
 
   // ---------------------------------------------------------------- event wiring
   $$(".tab").forEach((el) => el.addEventListener("click", () => setTab(el.dataset.tab)));
-  $("#fileInput").addEventListener("change", (e) => setFile(e.target.files[0] || null));
+  $("#fileInput").addEventListener("change", (e) => setFiles(e.target.files));
 
   const dz = $("#dropzone");
   ["dragenter", "dragover"].forEach((ev) => dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add("is-over"); }));
@@ -800,13 +1598,18 @@
   window.addEventListener("dragover", (e) => e.preventDefault());
   window.addEventListener("drop", (e) => {
     e.preventDefault();
-    const f = e.dataTransfer?.files?.[0];
-    if (f) { setTab("file"); setFile(f); }
+    const files = e.dataTransfer?.files;
+    if (files?.length) { setTab("file"); setFiles(files); }
   });
 
   $("#createForm").addEventListener("submit", submit);
   $("#modelInput").addEventListener("change", () => { updateModelHint(); savePrefs(); });
   $("#langInput").addEventListener("change", savePrefs);
+  $("#conditionInput").addEventListener("change", savePrefs);
+  // Enter submits; Shift+Enter starts another line for the next URL.
+  $("#urlInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("#createForm").requestSubmit(); }
+  });
   $("#historySearch").addEventListener("input", (e) => { state.historyQuery = e.target.value; renderJobs(); });
   $("#statusFilter").addEventListener("click", (e) => {
     const c = e.target.closest(".chip");
@@ -827,29 +1630,154 @@
     if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openDrawer(tr.dataset.id); }
   });
   $("#closeDrawer").addEventListener("click", closeDrawer);
-  $("#blanket").addEventListener("click", closeDrawer);
+  $("#blanket").addEventListener("click", () => (state.settingsOpen ? closeSettings() : closeDrawer()));
   document.addEventListener("keydown", (e) => {
-    if (!state.openId) return;
-    if (e.key === "Escape") return closeDrawer();
+    const panel = state.settingsOpen ? $("#settings") : state.openId ? $("#drawer") : null;
+    if (!panel) return;
+    if (e.key === "Escape") return state.settingsOpen ? closeSettings() : closeDrawer();
     if (e.key !== "Tab") return;
     // Keep keyboard focus inside the open drawer (modal dialog).
-    const focusable = $$('button, [href], input, select, textarea, audio, video, [tabindex]:not([tabindex="-1"])', $("#drawer"))
+    const focusable = $$('button, [href], input, select, textarea, summary, audio, video, [tabindex]:not([tabindex="-1"])', panel)
       .filter((el) => !el.disabled && el.offsetParent !== null);
     if (!focusable.length) return;
     const first = focusable[0], last = focusable[focusable.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    else if (!$("#drawer").contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (!panel.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  });
+  $("#openSettings").addEventListener("click", openSettings);
+  $("#closeSettings").addEventListener("click", closeSettings);
+  $("#settings").addEventListener("change", (e) => {
+    if (e.target.closest("#sRouting")) {
+      // A model ID only makes sense for the provider it was picked for.
+      const row = e.target.closest(".route"), r = e.target.dataset.r;
+      if (r === "provider") $("[data-r=model]", row).value = "";
+      if (r === "fb-provider") $("[data-r=fb-model]", row).value = "";
+      return saveRouting();
+    }
+    const f = e.target.dataset.f, id = e.target.closest(".provider")?.dataset.p;
+    if (!f || !id) return;
+    const value = e.target.value.trim();
+    if (f === "api_key" && !value) return;
+    if (f === "api_key") e.target.value = ""; // never kept in the page after saving
+    saveSettings({ providers: { [id]: { [f]: f === "max_input_tokens" ? Number(value) || 0 : value } } });
+  });
+  $("#settings").addEventListener("focusin", (e) => { if (e.target.matches("[data-combo]")) openCombo(e.target); });
+  $("#settings").addEventListener("focusout", (e) => { if (e.target.matches("[data-combo]")) closeCombo(e.target); });
+  $("#settings").addEventListener("input", (e) => { if (e.target.matches("[data-combo]")) openCombo(e.target, true); });
+  $("#settings").addEventListener("mousedown", (e) => {
+    const item = e.target.closest(".combo__item");
+    if (!item) return;
+    e.preventDefault(); // keep focus in the input until the pick is done
+    pickCombo($("input", item.closest(".combo")), item.dataset.value);
+  });
+  $("#settings").addEventListener("keydown", (e) => {
+    const input = e.target.closest("[data-combo]");
+    if (!input) return;
+    const menu = input.nextElementSibling;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); moveCombo(input, e.key === "ArrowDown" ? 1 : -1); }
+    else if (e.key === "Enter" && !menu.hidden) {
+      const active = $(".combo__item.is-active", menu);
+      if (active) { e.preventDefault(); pickCombo(input, active.dataset.value); }
+    } else if (e.key === "Escape" && !menu.hidden) { e.stopPropagation(); closeCombo(input); }
+  });
+  $("#settings").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-sact]");
+    if (b) onSettingsAction(b.dataset.sact, b);
   });
   $("#dActions").addEventListener("click", (e) => { const b = e.target.closest("[data-act]"); if (b) onAction(b.dataset.act, b); });
   document.addEventListener("click", (e) => { if (!e.target.closest(".dropdown")) $$(".dropdown__menu").forEach((m) => (m.hidden = true)); });
-  $("#segSearch").addEventListener("input", (e) => { state.segQuery = e.target.value; if (state.detail) renderSegments(state.detail); });
+  // EN/ID output-language toggles in the recap and chat cards.
+  $("#drawer").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-ai-lang]");
+    if (!b || !state.detail) return;
+    const [kind, code] = b.dataset.aiLang.split(":");
+    if (kind === "recap") { state.recapLang = code; renderRecap(state.detail); }
+    else { state.chatLang = code; renderChat(true); }
+  });
+  $("#dRecap").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-act]");
+    if (b) return onAction(b.dataset.act, b);
+    const ts = e.target.closest(".ts");
+    if (ts) seekTo(parseFloat(ts.dataset.ts));
+  });
+  $("#dChat").addEventListener("click", async (e) => {
+    const act = e.target.closest("[data-act]");
+    if (act) return onAction(act.dataset.act, act);
+    const ts = e.target.closest(".ts");
+    if (ts) return seekTo(parseFloat(ts.dataset.ts));
+    const chip = e.target.closest("[data-ask]");
+    if (chip) return sendChat(chip.dataset.ask);
+    const copy = e.target.closest("[data-copy]");
+    if (copy) {
+      const m = state.chat?.messages.find((x) => String(x.id) === copy.dataset.copy);
+      if (m) navigator.clipboard.writeText(m.text).then(() => flag("success", t("flag.chatCopied")));
+    }
+  });
+  $("#chatForm").addEventListener("submit", (e) => { e.preventDefault(); sendChat($("#chatInput").value); });
+  $("#chatInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendChat(e.target.value); }
+  });
+  $("#chatStop").addEventListener("click", async () => {
+    const d = state.detail;
+    if (!d) return;
+    try { await api(`/api/jobs/${d.id}/chat/stop`, { method: "POST" }); } catch (err) { flag("error", t("flag.actionFailed"), err.message); }
+    loadChat();
+  });
+  $("#chatClear").addEventListener("click", async () => {
+    const d = state.detail;
+    if (!d || !confirm(t("chat.confirmClear"))) return;
+    try { await api(`/api/jobs/${d.id}/chat`, { method: "DELETE" }); } catch (err) { flag("error", t("flag.actionFailed"), err.message); }
+    loadChat();
+  });
+  // Debounced: filtering a long transcript on every keystroke rebuilds thousands of rows.
+  let segSearchTimer = null;
+  $("#segSearch").addEventListener("input", (e) => {
+    clearTimeout(segSearchTimer);
+    segSearchTimer = setTimeout(() => { state.segQuery = e.target.value; if (state.detail) renderSegments(state.detail); }, 150);
+  });
   $("#dSegments").addEventListener("click", (e) => {
     const li = e.target.closest(".seg");
     const media = $("#dPlayer video, #dPlayer audio");
-    if (li && media) { media.currentTime = parseFloat(li.dataset.start); media.play().catch(() => {}); }
+    if (li && media && !li.classList.contains("is-editing")) { media.currentTime = parseFloat(li.dataset.start); media.play().catch(() => {}); }
   });
-  $("#recheckTools").addEventListener("click", () => loadHealth(true).then(() => flag("info", t("tools.rechecked"))));
+  // Inline correction of a finished transcript: double-click, Enter saves, Esc or empty text cancels.
+  $("#dSegments").addEventListener("dblclick", (e) => {
+    const li = e.target.closest(".seg"), d = state.detail;
+    if (!li || !d || d.status !== "done" || li.classList.contains("is-editing")) return;
+    const text = $(".seg__text", li);
+    li.classList.add("is-editing");
+    text.textContent = d.segments[+li.dataset.i].text; // drop search highlights while editing
+    text.contentEditable = "true";
+    text.focus();
+    getSelection().selectAllChildren(text);
+  });
+  $("#dSegments").addEventListener("keydown", (e) => {
+    const li = e.target.closest(".seg.is-editing");
+    if (!li) return;
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); e.target.blur(); }
+    if (e.key === "Escape") { e.stopPropagation(); li.dataset.cancel = "1"; e.target.blur(); }
+  });
+  $("#dSegments").addEventListener("focusout", (e) => {
+    const li = e.target.closest(".seg.is-editing");
+    if (li) saveSegment(li, !li.dataset.cancel);
+  });
+  // Player shortcuts while the drawer is open: K / Space play-pause, J / L jump 5 s.
+  document.addEventListener("keydown", (e) => {
+    const media = $("#dPlayer video, #dPlayer audio");
+    if (!state.openId || state.settingsOpen || !media || e.metaKey || e.ctrlKey || e.altKey) return;
+    const el = e.target instanceof Element ? e.target : document.body;
+    if (el.closest("input, textarea, select, [contenteditable=true], audio, video")) return;
+    const key = e.key.toLowerCase();
+    if (key === "k" || (key === " " && !el.closest("button, a, summary"))) {
+      e.preventDefault();
+      if (media.paused) media.play().catch(() => {}); else media.pause();
+    } else if (key === "j" || key === "l") {
+      e.preventDefault();
+      media.currentTime = Math.max(0, media.currentTime + (key === "j" ? -5 : 5));
+    }
+  });
+  $("#recheckTools").addEventListener("click", () => Promise.all([loadHealth(true), loadSettings(true)]).then(() => flag("info", t("tools.rechecked"))));
   $$("#langSwitch button").forEach((b) => b.addEventListener("click", () => setLanguage(b.dataset.lang)));
   $("#themeToggle").addEventListener("change", (e) => setTheme(e.target.checked ? "dark" : "light"));
 
@@ -860,5 +1788,6 @@
   renderFile();
   resetSubmit();
   loadHealth().catch(() => flag("error", t("flag.connect")));
+  loadSettings().catch(() => {});
   tick();
 })();
