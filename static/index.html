@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transkripu</title>
+  <!-- Apply saved theme/language before first paint to avoid a flash -->
+  <script>
+    try {
+      var t = localStorage.getItem("transkripu-theme");
+      if (t !== "dark") t = "light";
+      document.documentElement.dataset.theme = t;
+      var l = localStorage.getItem("transkripu-lang");
+      if (l === "en" || l === "id") document.documentElement.lang = l;
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <!-- Elements with data-i18n="key" get their text from I18N[lang][key] (static/app.js).
+       data-i18n-html sets innerHTML, data-i18n-placeholder / data-i18n-aria set attributes. -->
+
+  <header class="topnav">
+    <div class="topnav__left">
+      <div class="app-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg>
+      </div>
+      <span class="app-name">Transkripu</span>
+      <nav class="topnav__links">
+        <a class="topnav__link is-active" href="#" data-i18n="nav.transcripts">Transcripts</a>
+      </nav>
+    </div>
+    <div class="topnav__right">
+      <span id="health" class="health"><span class="dot"></span><span class="health__text" data-i18n="health.checking">Checking…</span></span>
+      <div class="segmented" role="group" data-i18n-aria="lang.switch" id="langSwitch">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="id" aria-pressed="false">ID</button>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="themeToggle" role="switch">
+        <span class="toggle__track" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM11 1h2v3h-2zm0 19h2v3h-2zM1 11h3v2H1zm19 0h3v2h-3zM4.2 5.6l1.4-1.4 2.1 2.1-1.4 1.4zm12.1 12.1 1.4-1.4 2.1 2.1-1.4 1.4zM4.2 18.4l2.1-2.1 1.4 1.4-2.1 2.1zM16.3 6.3l2.1-2.1 1.4 1.4-2.1 2.1z"/></svg>
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </span>
+        <span class="toggle__label" data-i18n="theme.dark">Dark mode</span>
+      </label>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page__header">
+      <nav class="breadcrumbs"><span data-i18n="crumb.workspace">Workspace</span><span class="sep">/</span><span data-i18n="crumb.page">Lecture transcripts</span></nav>
+      <h1 data-i18n="page.title">Lecture transcripts</h1>
+      <p class="page__desc" data-i18n="page.desc">Upload a video/audio file or paste a URL, and Whisper on your Mac creates a transcript &amp; subtitles. Everything runs locally.</p>
+    </div>
+
+    <div id="toolWarning" class="section-msg section-msg--warning" hidden>
+      <svg class="section-msg__icon" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2 1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2V9h2v4z"/></svg>
+      <div>
+        <h4 class="section-msg__title" data-i18n="tools.title">Some tools are not installed</h4>
+        <div id="toolWarningBody" class="section-msg__body"></div>
+        <button class="btn btn--link btn--compact" id="recheckTools" data-i18n="tools.recheck">Check again</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- Create panel -->
+      <section class="card create">
+        <h2 class="card__title" data-i18n="create.title">New transcript</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab is-active" role="tab" data-tab="file" data-i18n="create.tabFile">Local file</button>
+          <button class="tab" role="tab" data-tab="url" data-i18n="create.tabUrl">YouTube / web URL</button>
+        </div>
+
+        <form id="createForm" autocomplete="off">
+          <div class="tabpanel" data-panel="file">
+            <label class="dropzone" id="dropzone" tabindex="0" role="button">
+              <input type="file" id="fileInput" accept="video/*,audio/*,.mkv,.m4a,.mp3,.wav,.flac,.ogg,.oga,.opus,.aac,.aif,.aiff,.caf" hidden>
+              <svg viewBox="0 0 24 24" width="32" height="32" class="dropzone__icon"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              <span class="dropzone__title" id="dropTitle"></span>
+              <span class="dropzone__hint" id="dropHint"></span>
+            </label>
+          </div>
+
+          <div class="tabpanel" data-panel="url" hidden>
+            <div class="field">
+              <label class="field__label" for="urlInput" data-i18n="create.urlLabel">Video URL</label>
+              <input class="textfield" id="urlInput" type="url" placeholder="https://www.youtube.com/watch?v=…">
+              <p class="field__help" data-i18n="create.urlHelp">Only the audio track is downloaded.</p>
+            </div>
+            <div class="field">
+              <label class="field__label" for="cookiesInput" data-i18n="create.cookiesLabel">Use browser sign-in</label>
+              <select class="select" id="cookiesInput">
+                <option value="" data-i18n="create.cookiesNone">No (public video)</option>
+                <option value="chrome">Chrome</option>
+                <option value="safari">Safari</option>
+                <option value="firefox">Firefox</option>
+                <option value="edge">Edge</option>
+                <option value="brave">Brave</option>
+              </select>
+              <p class="field__help" data-i18n="create.cookiesHelp">For videos that require login, e.g. your campus LMS.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="modelInput" data-i18n="create.model">Model</label>
+            <select class="select" id="modelInput"></select>
+            <p class="field__help" id="modelHint"></p>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="langInput" data-i18n="create.language">Spoken language</label>
+            <select class="select" id="langInput"></select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="promptInput"><span data-i18n="create.prompt">Vocabulary hints</span> <span class="optional" data-i18n="create.optional">(optional)</span></label>
+            <textarea class="textfield textarea" id="promptInput" rows="3" data-i18n-placeholder="create.promptPlaceholder"></textarea>
+            <p class="field__help" data-i18n="create.promptHelp">Technical terms, lecturer names or acronyms so they're spelled correctly.</p>
+          </div>
+
+          <div class="form-footer">
+            <button type="submit" class="btn btn--primary" id="submitBtn" data-i18n="create.submit">Start transcription</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- History -->
+      <section class="card history">
+        <div class="history__head">
+          <h2 class="card__title" data-i18n="history.title">History</h2>
+          <div class="search">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 9.5 16a6.47 6.47 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input id="historySearch" type="search" data-i18n-placeholder="history.search" data-i18n-title="history.searchHint">
+          </div>
+        </div>
+        <div class="chips" id="statusFilter" role="group" data-i18n-aria="filter.label">
+          <button type="button" class="chip" data-filter="all" aria-pressed="true"><span data-i18n="filter.all">All</span><span class="chip__count"></span></button>
+          <button type="button" class="chip" data-filter="active" aria-pressed="false"><span data-i18n="filter.active">In progress</span><span class="chip__count"></span></button>
+          <button type="button" class="chip" data-filter="done" aria-pressed="false"><span data-i18n="filter.done">Done</span><span class="chip__count"></span></button>
+          <button type="button" class="chip" data-filter="failed" aria-pressed="false"><span data-i18n="filter.failed">Failed / cancelled</span><span class="chip__count"></span></button>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th data-i18n="history.colTitle">Title</th>
+                <th class="col-status" data-i18n="history.colStatus">Status</th>
+                <th class="col-progress" data-i18n="history.colProgress">Progress</th>
+                <th class="col-date" data-i18n="history.colCreated">Created</th>
+              </tr>
+            </thead>
+            <tbody id="jobRows"></tbody>
+          </table>
+          <div id="emptyState" class="empty" hidden>
+            <svg viewBox="0 0 24 24" width="40" height="40"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <h3 data-i18n="history.emptyTitle">No transcripts yet</h3>
+            <p data-i18n="history.emptyDesc">Upload your first lecture recording to get started.</p>
+          </div>
+          <div id="noMatch" class="empty empty--compact" hidden>
+            <p data-i18n="history.noMatch">No transcripts match this filter.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Detail drawer (Jira-style issue view) -->
+  <div class="blanket" id="blanket" hidden></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" aria-hidden="true" tabindex="-1">
+    <div class="drawer__header">
+      <div class="drawer__heading">
+        <div class="drawer__meta" id="dMeta"></div>
+        <h2 id="dTitle"></h2>
+      </div>
+      <button class="btn btn--subtle btn--icon" id="closeDrawer" data-i18n-aria="drawer.close">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+
+    <div class="drawer__actions" id="dActions"></div>
+
+    <div class="drawer__body">
+      <div id="dProgress" class="progress-block" hidden>
+        <div class="progress-block__row"><span id="dStage"></span><span id="dPct"></span></div>
+        <div class="progress"><div class="progress__bar" id="dBar"></div></div>
+      </div>
+
+      <div id="dError" class="section-msg section-msg--error" hidden>
+        <svg class="section-msg__icon" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <div><h4 class="section-msg__title" data-i18n="drawer.failed">Processing failed</h4><pre class="section-msg__pre" id="dErrorText"></pre></div>
+      </div>
+
+      <div id="dPlayer" class="player"></div>
+
+      <div class="transcript-head">
+        <h3><span data-i18n="drawer.transcript">Transcript</span> <span class="badge" id="dCount">0</span></h3>
+        <div class="search search--sm">
+          <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 9.5 16a6.47 6.47 0 0 0 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input id="segSearch" type="search" data-i18n-placeholder="drawer.search">
+        </div>
+        <label class="toggle-label"><input type="checkbox" id="followToggle" checked> <span data-i18n="drawer.follow">Follow playback</span></label>
+      </div>
+      <ol class="segments" id="dSegments"></ol>
+    </div>
+  </aside>
+
+  <div class="flags" id="flags"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+"""Test stub for yt-dlp: prints progress lines and writes source.m4a + source.info.json."""
+import json, sys, time
+
+out = sys.argv[sys.argv.index("-o") + 1]
+for pct in (10, 60, 100):
+    print(f"[download]  {pct}.0% of 1.00MiB", flush=True)
+    time.sleep(0.05)
+open(out.replace("%(ext)s", "m4a"), "wb").write(b"\0" * 1024)
+json.dump({"title": "Stub Video"}, open(out.replace("%(ext)s", "info.json"), "w"))

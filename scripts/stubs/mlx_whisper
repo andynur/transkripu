@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+"""Test stub for mlx_whisper: mimics its CLI flags, verbose output and output files."""
+import argparse, json, os, time
+
+p = argparse.ArgumentParser()
+p.add_argument("audio")
+for flag in ("--model", "--output-dir", "--output-name", "--output-format", "--language", "--initial-prompt"):
+    p.add_argument(flag)
+a = p.parse_args()
+
+if os.environ.get("STUB_FAIL") == "mlx":
+    raise SystemExit("stub: simulated mlx_whisper failure")
+
+print("Fetching 4 files: 100%|####| 4/4", flush=True)
+segments = []
+for i in range(3):
+    start, end = i * 2.0, i * 2.0 + 2
+    text = f"Stub segment {i + 1}."
+    print(f"[00:{int(start):02d}.000 --> 00:{int(end):02d}.000] {text}", flush=True)
+    segments.append({"start": start, "end": end, "text": " " + text})
+    # "STUB_SLOW" in the prompt keeps the job running long enough to cancel it.
+    time.sleep(1.0 if "STUB_SLOW" in (a.initial_prompt or "") else float(os.environ.get("STUB_DELAY", "0.1")))
+
+base = os.path.join(a.output_dir, a.output_name)
+json.dump({"text": "", "segments": segments, "language": a.language or "en"}, open(base + ".json", "w"))
+for ext in ("srt", "vtt", "txt", "tsv"):
+    open(f"{base}.{ext}", "w").write("\n".join(s["text"].strip() for s in segments))
