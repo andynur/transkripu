@@ -1,10 +1,40 @@
 #!/usr/bin/env python3
-"""Test stub for yt-dlp: prints progress lines and writes source.m4a + source.info.json."""
-import json, sys, time
+"""Test stub for yt-dlp.
 
-out = sys.argv[sys.argv.index("-o") + 1]
-for pct in (10, 60, 100):
-    print(f"[download]  {pct}.0% of 1.00MiB", flush=True)
-    time.sleep(0.05)
-open(out.replace("%(ext)s", "m4a"), "wb").write(b"\0" * 1024)
-json.dump({"title": "Stub Video", "duration": 6}, open(out.replace("%(ext)s", "info.json"), "w"))
+Download: prints progress lines and writes source.m4a + source.info.json.
+--skip-download: writes only source.info.json; a URL containing "subs=manual" lists an
+English uploaded track, "subs=auto" an English auto-caption track (plus a translation).
+--load-info-json + --write-subs/--write-auto-subs: writes captions.<lang>.json3.
+"""
+import json, os, sys, time
+
+args = sys.argv[1:]
+out = args[args.index("-o") + 1]
+url = next((a for a in args if a.startswith("http")), "")
+
+
+def track(lang):
+    return [{"ext": "json3", "url": f"https://stub/{lang}.json3"}, {"ext": "vtt", "url": f"https://stub/{lang}.vtt"}]
+
+
+if "--load-info-json" in args:
+    lang = args[args.index("--sub-langs") + 1]
+    events = [{"tStartMs": 0, "dDurationMs": 2500, "segs": [{"utf8": "Hello from the captions."}]},
+              {"tStartMs": 2000, "dDurationMs": 10, "aAppend": 1, "segs": [{"utf8": "\n"}]},
+              {"tStartMs": 2000, "dDurationMs": 2000, "segs": [{"utf8": "Second "}, {"utf8": "line."}]},
+              {"tStartMs": 4000, "dDurationMs": 2000, "segs": [{"utf8": "Second line."}]}]
+    if os.environ.get("STUB_FAIL") != "subs":
+        json.dump({"events": events}, open(out.replace("%(ext)s", f"{lang}.json3"), "w"))
+    sys.exit(0)
+
+info = {"title": "Stub Video", "duration": 6, "language": "en"}
+if "subs=manual" in url:
+    info["subtitles"] = {"en": track("en"), "live_chat": [{"ext": "json"}]}
+if "subs=auto" in url:
+    info["automatic_captions"] = {"en-orig": track("en-orig"), "en": track("en"), "id": track("id")}
+if "--skip-download" not in args:
+    for pct in (10, 60, 100):
+        print(f"[download]  {pct}.0% of 1.00MiB", flush=True)
+        time.sleep(0.05)
+    open(out.replace("%(ext)s", "m4a"), "wb").write(b"\0" * 1024)
+json.dump(info, open(out.replace("%(ext)s", "info.json"), "w"))

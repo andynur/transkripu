@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import atexit
 import collections
+import html
 import ipaddress
 import json
 import logging
@@ -99,6 +100,9 @@ DEFAULT_MODEL = MODELS[0]
 LANGUAGES = ["en", "id", "auto"]  # "auto" = let Whisper detect it
 COOKIE_BROWSERS = ["", "chrome", "safari", "firefox", "edge", "brave"]  # "" = no cookies
 OUTPUT_FORMATS = ["srt", "vtt", "txt", "tsv", "json"]
+# URL jobs: "auto" = creator-uploaded subtitles when they exist, else Whisper;
+# "captions" = also accept the site's auto-generated captions; "whisper" = always transcribe.
+TRANSCRIPT_SOURCES = ["auto", "captions", "whisper"]
 VIDEO_EXTS = {".mp4", ".mov", ".m4v", ".webm", ".mkv", ".avi", ".mpg", ".mpeg", ".3gp", ".ts", ".wmv", ".flv"}
 AUDIO_EXTS = {".mp3", ".m4a", ".wav", ".aac", ".flac", ".ogg", ".oga", ".opus", ".wma", ".aif", ".aiff", ".caf"}
 MEDIA_EXTS = VIDEO_EXTS | AUDIO_EXTS
@@ -629,6 +633,126 @@ def step_download(job: dict) -> None:
            media_bytes=media.stat().st_size)
 
 
+CAPTION_EXTS = ("json3", "vtt", "srt")  # preference order; json3 has no rolling duplicate cues
+VTT_TIME_RE = re.compile(r"((?:\d+:)?\d{1,2}:\d{2}[.,]\d{3})\s*-->\s*((?:\d+:)?\d{1,2}:\d{2}[.,]\d{3})")
+
+
+def pick_caption_track(info: dict, want: str | None, allow_auto: bool) -> tuple[str, str] | None:
+    """(track key, kind) in the spoken language, or None. Auto-caption lists also hold
+    machine translations of the original track, so only the original is accepted."""
+    def usable(tracks: dict) -> list[str]:
+        return [k for k, v in (tracks or {}).items()
+                if k != "live_chat" and any(f.get("ext") in CAPTION_EXTS for f in v or [])]
+
+    def in_lang(key: str, lang: str) -> bool:
+        return key == lang or key.startswith(lang + "-")
+
+    original = info.get("language")  # the video's own language, when the site reports it
+    spoken = want or original
+    manual = usable(info.get("subtitles"))
+    if spoken:
+        hit = next((k for k in manual if in_lang(k, spoken)), None)
+    else:  # spoken language unknown: only an unambiguous single track is safe
+        hit = manual[0] if len(manual) == 1 else None
+    if hit:
+        return hit, "manual_subs"
+    if not allow_auto:
+        return None
+    auto = usable(info.get("automatic_captions"))
+    orig = [k for k in auto if k.endswith("-orig")]  # YouTube marks the untranslated ASR track
+    hit = next((k for k in orig if not spoken or in_lang(k[:-5], spoken)), None)
+    if not hit and not orig and spoken and original and in_lang(original, spoken.split("-")[0]):
+        hit = next((k for k in auto if in_lang(k, spoken)), None)
+    return (hit, "auto_captions") if hit else None
+
+
+def parse_captions(path: Path) -> list[dict]:
+    """json3 (YouTube) or WebVTT/SRT -> [{start, end, text}], dropping empty and repeated cues."""
+    raw: list[tuple[float, float, str]] = []
+    if path.suffix == ".json3":
+        for ev in json.loads(path.read_text(encoding="utf-8")).get("events", []):
+            text = "".join(s.get("utf8", "") for s in ev.get("segs") or []).replace("\n", " ")
+            start = ev.get("tStartMs", 0) / 1000
+            raw.append((start, start + ev.get("dDurationMs", 0) / 1000, text))
+    else:
+        for block in re.split(r"\n\s*\n", path.read_text(encoding="utf-8", errors="replace")):
+            lines = block.strip().splitlines()
+            for i, line in enumerate(lines):
+                m = VTT_TIME_RE.search(line)
+                if m:
+                    text = " ".join(re.sub(r"<[^>]+>", "", t) for t in lines[i + 1:])
+                    raw.append((timestamp_to_seconds(m.group(1).replace(",", ".")),
+                                timestamp_to_seconds(m.group(2).replace(",", ".")), html.unescape(text)))
+                    break
+    segments: list[dict] = []
+    for start, end, text in sorted(raw, key=lambda r: r[0]):
+        text = " ".join(text.split())
+        if not text:
+            continue
+        if segments and segments[-1]["text"] == text:  # a cue repeated to keep it on screen
+            segments[-1]["end"] = round(max(segments[-1]["end"], end), 3)
+            continue
+        if segments and segments[-1]["end"] > start:  # auto-caption lines overlap the next one
+            segments[-1]["end"] = start
+        segments.append({"start": round(start, 3), "end": round(max(end, start), 3), "text": text})
+    return segments
+
+
+def step_captions(job: dict) -> bool:
+    """URL jobs: use the site's subtitles instead of Whisper when allowed and available.
+    Returns False (and leaves the job to download + transcribe) when there is no usable track."""
+    opts = job["options"]
+    source = opts.get("transcript_source") or "auto"
+    if source == "whisper" or not TOOLS.get("yt_dlp"):
+        return False
+    job_id, directory = job["id"], job_dir(job["id"])
+    update(job_id, status=DOWNLOADING, stage="checking_captions", stage_pct=None, progress=0)
+    cookies = ["--cookies-from-browser", opts["cookies_browser"]] if opts.get("cookies_browser") else []
+    info_file = directory / "source.info.json"
+    started = time.time()
+    try:
+        run_process(job_id, TOOLS["yt_dlp"] + ["--no-playlist", "--skip-download", "--write-info-json",
+                                               "-o", str(directory / "source.%(ext)s"), *cookies, job["url"]])
+        info = json.loads(info_file.read_text())
+    except Cancelled:
+        raise
+    except Exception as e:  # noqa: BLE001 - the download step reports the real error
+        log.info("Job %s: caption check failed (%s), using Whisper", job_id, str(e)[:200])
+        return False
+    language = opts.get("language") if opts.get("language") != "auto" else None
+    picked = pick_caption_track(info, language, allow_auto=source == "captions")
+    update(job_id, title=info.get("title") or job.get("title"),
+           duration=float(info["duration"]) if info.get("duration") else None)
+    if not picked:
+        job_log(job_id, "\n[transkripu] No usable subtitles in the spoken language; transcribing with Whisper.\n")
+        return False
+    key, kind = picked
+    update(job_id, stage="downloading_captions", progress=DOWNLOAD_SHARE / 2)
+    try:
+        run_process(job_id, TOOLS["yt_dlp"] + [
+            "--load-info-json", str(info_file), "--skip-download",
+            "--write-auto-subs" if kind == "auto_captions" else "--write-subs",
+            "--sub-langs", key, "--sub-format", "/".join(CAPTION_EXTS),
+            "-o", str(directory / "captions.%(ext)s"), *cookies])
+        files = sorted((f for f in directory.glob("captions.*") if f.suffix[1:] in CAPTION_EXTS),
+                       key=lambda f: CAPTION_EXTS.index(f.suffix[1:]))
+        segments = parse_captions(files[0]) if files else []
+    except Cancelled:
+        raise
+    except Exception as e:  # noqa: BLE001 - e.g. HTTP 429 on the subtitle URL
+        log.info("Job %s: caption download failed (%s), using Whisper", job_id, str(e)[:200])
+        segments = []
+    if not segments:
+        job_log(job_id, "\n[transkripu] Subtitles could not be read; transcribing with Whisper.\n")
+        return False
+    set_timing(job_id, "captions", time.time() - started)
+    write_outputs(directory, segments, OUTPUT_FORMATS)
+    write_json_atomic(directory / "segments.json", segments)
+    update(job_id, outputs=list(OUTPUT_FORMATS), segments_count=len(segments), transcript_source=kind,
+           caption_lang=key, detected_language=key.removesuffix("-orig").split("-")[0])
+    return True
+
+
 def step_transcribe(job: dict) -> None:
     """Run mlx_whisper and collect segments + output files."""
     job_id, directory = job["id"], job_dir(job["id"])
@@ -774,10 +898,12 @@ def process_job(job_id: str) -> None:
     started = time.time()
     log.info("Job %s: started", job_id)
     try:
-        if job["source"] == "url" and not job.get("media"):
-            step_download(job)
-        check_cancelled(job_id)
-        step_transcribe(jobs[job_id])
+        from_captions = job["source"] == "url" and not job.get("media") and step_captions(job)
+        if not from_captions:
+            if job["source"] == "url" and not job.get("media"):
+                step_download(job)
+            check_cancelled(job_id)
+            step_transcribe(jobs[job_id])
         update(job_id, status=DONE, stage="done", stage_pct=None, progress=100,
                elapsed=round(time.time() - started, 1), error=None, error_code=None)
         log.info("Job %s: done in %.1fs", job_id, time.time() - started)
@@ -1749,6 +1875,9 @@ def create_job():
     cookies_browser = form.get("cookies_browser") or ""
     if cookies_browser not in COOKIE_BROWSERS:
         return api_error("unknown_browser", "Unknown browser.")
+    transcript_source = form.get("transcript_source") or "auto"
+    if transcript_source not in TRANSCRIPT_SOURCES:
+        return api_error("unknown_transcript_source", "Unknown transcript source.")
 
     job_id = time.strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:6]
     directory = job_dir(job_id)
@@ -1763,6 +1892,7 @@ def create_job():
             "cookies_browser": cookies_browser,
             # False: less prone to repetition loops on long/silent audio, a bit less consistent.
             "condition_previous": form.get("condition_previous") != "0",
+            "transcript_source": transcript_source,
         },
     }
     job["queued_at"] = job["created"]
@@ -1827,15 +1957,23 @@ def retry_job(job_id):
         return api_error("chat_busy", "The previous answer is still being written.", 409)
     if job["source"] == "upload" and not job.get("media"):
         return api_error("media_removed", "The source file was deleted, so this job cannot run again.", 409)
+    body = request.get_json(silent=True) or {}
+    source = body.get("transcript_source")
+    if source is not None and source not in TRANSCRIPT_SOURCES:
+        return api_error("unknown_transcript_source", "Unknown transcript source.")
     chat_clear(job_id)  # the chat was about the old transcript
     directory = job_dir(job_id)
-    for f in [directory / "segments.json", directory / "recap.md",
+    for f in [directory / "segments.json", directory / "recap.md", *directory.glob("captions.*"),
               *(directory / f"transcript.{fmt}" for fmt in OUTPUT_FORMATS)]:
         f.unlink(missing_ok=True)
+    if source:
+        with lock:
+            job["options"]["transcript_source"] = source
     update(job_id, reopen=True, status=QUEUED, stage="queued", stage_pct=None, stage_detail=None,
            progress=0, error=None, error_code=None, outputs=[], segments_count=0, timings={},
            elapsed=None, detected_language=None, recap_status=None, recap_stage=None, recap_pct=None, recap_error=None, recap_error_code=None,
-           chat_lang=None, queued_at=time.time(), transcribe_started=None, edited=None)
+           chat_lang=None, queued_at=time.time(), transcribe_started=None, edited=None,
+           transcript_source=None, caption_lang=None)
     work_queue.put(job_id)
     return jsonify(public(jobs[job_id]))
 

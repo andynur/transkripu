@@ -261,6 +261,42 @@ def main() -> int:
               "options: condition_previous=0 reaches Whisper")
         request(base, "DELETE", f"/api/jobs/{cj['id']}")
 
+        # URL flow: site subtitles instead of Whisper
+        s, sj = request(base, "POST", "/api/jobs", {"url": "https://youtu.be/stub?subs=manual"})
+        sj = wait_for(base, sj["id"], {"done", "error"})
+        check(sj.get("status") == "done" and sj.get("transcript_source") == "manual_subs" and not sj.get("media"),
+              "captions: uploaded subtitles used, no audio download", sj.get("error") or str(sj.get("transcript_source")))
+        check([x["text"] for x in sj.get("segments", [])] == ["Hello from the captions.", "Second line."]
+              and sj["segments"][0]["end"] == 2.0, "captions: json3 parsed, repeats merged, overlap trimmed",
+              str(sj.get("segments")))
+        check(sj.get("outputs") == ["srt", "vtt", "txt", "tsv", "json"] and sj.get("detected_language") == "en",
+              "captions: all outputs written", str(sj.get("outputs")))
+        s, _ = request(base, "POST", f"/api/jobs/{sj['id']}/retry", json_body={"transcript_source": "whisper"})
+        sj = wait_for(base, sj["id"], {"done", "error"})
+        check(s == 200 and sj.get("status") == "done" and sj.get("media") and sj.get("transcript_source") is None
+              and sj["options"]["transcript_source"] == "whisper", "captions: rerun with Whisper downloads audio",
+              sj.get("error") or str(sj.get("transcript_source")))
+        s, body = request(base, "POST", f"/api/jobs/{sj['id']}/retry", json_body={"transcript_source": "nope"})
+        check(s == 400 and body.get("error_code") == "unknown_transcript_source", "validation: retry transcript_source")
+        request(base, "DELETE", f"/api/jobs/{sj['id']}")
+        s, aj = request(base, "POST", "/api/jobs", {"url": "https://youtu.be/stub?subs=auto"})
+        aj = wait_for(base, aj["id"], {"done", "error"})
+        check(aj.get("status") == "done" and aj.get("media") and not aj.get("transcript_source"),
+              "captions: auto-captions ignored in auto mode", aj.get("error") or str(aj.get("transcript_source")))
+        request(base, "DELETE", f"/api/jobs/{aj['id']}")
+        s, aj = request(base, "POST", "/api/jobs", {"url": "https://youtu.be/stub?subs=auto", "transcript_source": "captions"})
+        aj = wait_for(base, aj["id"], {"done", "error"})
+        check(aj.get("transcript_source") == "auto_captions" and aj.get("caption_lang") == "en-orig",
+              "captions: original auto-caption track picked, not a translation", str(aj.get("caption_lang")))
+        request(base, "DELETE", f"/api/jobs/{aj['id']}")
+        s, aj = request(base, "POST", "/api/jobs", {"url": "https://youtu.be/stub?subs=manual", "language": "id"})
+        aj = wait_for(base, aj["id"], {"done", "error"})
+        check(aj.get("status") == "done" and not aj.get("transcript_source"),
+              "captions: other-language subtitles fall back to Whisper", str(aj.get("transcript_source")))
+        request(base, "DELETE", f"/api/jobs/{aj['id']}")
+        s, body = request(base, "POST", "/api/jobs", {"url": "https://x.y", "transcript_source": "bogus"})
+        check(s == 400 and body.get("error_code") == "unknown_transcript_source", "validation: unknown_transcript_source")
+
         # Validation
         s, body = request(base, "POST", "/api/jobs", {"url": "ftp://nope"})
         check(s == 400 and body.get("error_code") == "invalid_url", "validation: invalid_url")

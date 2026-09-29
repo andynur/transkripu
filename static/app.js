@@ -41,6 +41,11 @@
       "create.cookiesLabel": "Use browser sign-in",
       "create.cookiesNone": "No (public video)",
       "create.cookiesHelp": "For videos that require login, e.g. your campus LMS.",
+      "create.sourceLabel": "Transcript source",
+      "create.source.auto": "Uploaded subtitles if available, else Whisper",
+      "create.source.captions": "Any subtitles, incl. auto-generated (fastest)",
+      "create.source.whisper": "Always Whisper (best quality)",
+      "create.sourceHelp": "Subtitles skip the audio download and transcription. Auto-generated ones often lack punctuation.",
       "create.model": "Model",
       "create.language": "Spoken language",
       "create.prompt": "Vocabulary hints",
@@ -78,6 +83,8 @@
       "stage.downloading_audio": "Downloading audio… {pct}%",
       "stage.loading_model": "Loading model…",
       "stage.downloading_model": "Downloading model (one-time)…",
+      "stage.checking_captions": "Checking for subtitles…",
+      "stage.downloading_captions": "Downloading subtitles…",
       "stage.detecting_language": "Detected language: {detail}",
       "stage.transcribing": "Transcribing… {pct}%",
       "stage.done": "Done", "stage.failed": "Failed", "stage.cancelled": "Cancelled",
@@ -93,6 +100,7 @@
       "err.job_running": "Job is still running.",
       "err.unknown_language": "Unknown language.",
       "err.unknown_browser": "Unknown browser for sign-in.",
+      "err.unknown_transcript_source": "Unknown transcript source.",
       "err.unsupported_file": "Unsupported file type. Use a video or audio file (MP4, MOV, MKV, MP3, M4A, WAV, …).",
       "err.disk_full": "Not enough free disk space for this file.",
       "err.forbidden": "Request blocked. Open the app at http://127.0.0.1:8765.",
@@ -107,7 +115,7 @@
       "drawer.waiting": "Text will appear here while processing…",
       "drawer.noText": "No text.",
       "drawer.noResults": "No results for “{q}”.",
-      "timing.download": "Download {d}", "timing.model": "Load model {d}", "timing.transcribe": "Transcribe {d}",
+      "timing.download": "Download {d}", "timing.model": "Load model {d}", "timing.transcribe": "Transcribe {d}", "timing.captions": "Subtitles {d}",
 
       "act.download": "Download",
       "act.srt": "SRT subtitles", "act.srt.sub": "For VLC, IINA, Premiere, YouTube",
@@ -222,6 +230,9 @@
       "drawer.editHint": "Double-click a line to correct it. Enter saves, Esc cancels.",
       "drawer.shortcuts": "K or Space: play/pause · J / L: back / forward 5 s.",
       "drawer.mediaRemoved": "The source media was deleted to save space. The transcript is kept.",
+      "drawer.src.manual_subs": "from uploaded subtitles", "drawer.src.auto_captions": "from auto-generated subtitles",
+      "drawer.noMediaCaptions": "Transcript taken from the video's subtitles, so no audio was downloaded.",
+      "act.whisper": "Transcribe with Whisper",
       "act.deleteMedia": "Delete media file",
       "act.confirmDeleteMedia": "Delete the media file of “{title}” ({size})? The transcript, recap and chat stay.",
       "act.confirmDeleteMediaUpload": "You can no longer transcribe it again.",
@@ -263,6 +274,11 @@
       "create.cookiesLabel": "Pakai sesi login browser",
       "create.cookiesNone": "Tidak (video publik)",
       "create.cookiesHelp": "Untuk video yang perlu login, misalnya LMS kampus.",
+      "create.sourceLabel": "Sumber transkrip",
+      "create.source.auto": "Subtitle unggahan bila ada, selain itu Whisper",
+      "create.source.captions": "Subtitle apa pun, termasuk otomatis (tercepat)",
+      "create.source.whisper": "Selalu Whisper (kualitas terbaik)",
+      "create.sourceHelp": "Subtitle melewati unduh audio dan transkripsi. Subtitle otomatis sering tanpa tanda baca.",
       "create.model": "Model",
       "create.language": "Bahasa ucapan",
       "create.prompt": "Petunjuk istilah",
@@ -300,6 +316,8 @@
       "stage.downloading_audio": "Mengunduh audio… {pct}%",
       "stage.loading_model": "Memuat model…",
       "stage.downloading_model": "Mengunduh model (hanya sekali)…",
+      "stage.checking_captions": "Memeriksa subtitle…",
+      "stage.downloading_captions": "Mengunduh subtitle…",
       "stage.detecting_language": "Bahasa terdeteksi: {detail}",
       "stage.transcribing": "Mentranskrip… {pct}%",
       "stage.done": "Selesai", "stage.failed": "Gagal", "stage.cancelled": "Dibatalkan",
@@ -315,6 +333,7 @@
       "err.job_running": "Job masih berjalan.",
       "err.unknown_language": "Bahasa tidak dikenal.",
       "err.unknown_browser": "Browser untuk login tidak dikenal.",
+      "err.unknown_transcript_source": "Sumber transkrip tidak dikenal.",
       "err.unsupported_file": "Jenis file tidak didukung. Gunakan file video atau audio (MP4, MOV, MKV, MP3, M4A, WAV, …).",
       "err.disk_full": "Ruang disk tidak cukup untuk file ini.",
       "err.forbidden": "Permintaan diblokir. Buka aplikasi di http://127.0.0.1:8765.",
@@ -329,7 +348,7 @@
       "drawer.waiting": "Teks akan muncul di sini selama proses berjalan…",
       "drawer.noText": "Tidak ada teks.",
       "drawer.noResults": "Tidak ada hasil untuk “{q}”.",
-      "timing.download": "Unduh {d}", "timing.model": "Muat model {d}", "timing.transcribe": "Transkrip {d}",
+      "timing.download": "Unduh {d}", "timing.model": "Muat model {d}", "timing.transcribe": "Transkrip {d}", "timing.captions": "Subtitle {d}",
 
       "act.download": "Unduh",
       "act.srt": "Subtitle SRT", "act.srt.sub": "Untuk VLC, IINA, Premiere, YouTube",
@@ -444,6 +463,9 @@
       "drawer.editHint": "Klik dua kali pada baris untuk memperbaikinya. Enter menyimpan, Esc membatalkan.",
       "drawer.shortcuts": "K atau Spasi: putar/jeda · J / L: mundur / maju 5 dtk.",
       "drawer.mediaRemoved": "File media sumber sudah dihapus untuk menghemat ruang. Transkrip tetap tersimpan.",
+      "drawer.src.manual_subs": "dari subtitle unggahan", "drawer.src.auto_captions": "dari subtitle otomatis",
+      "drawer.noMediaCaptions": "Transkrip diambil dari subtitle video, jadi audio tidak diunduh.",
+      "act.whisper": "Transkrip dengan Whisper",
       "act.deleteMedia": "Hapus file media",
       "act.confirmDeleteMedia": "Hapus file media “{title}” ({size})? Transkrip, rekap, dan chat tetap ada.",
       "act.confirmDeleteMediaUpload": "Tugas ini tidak bisa ditranskrip ulang lagi.",
@@ -616,7 +638,7 @@
   // ---------------------------------------------------------------- form preferences
   function savePrefs() {
     storage.set(LS_PREFS, JSON.stringify({ model: $("#modelInput").value, language: $("#langInput").value, prompt: $("#promptInput").value,
-      noCondition: $("#conditionInput").checked }));
+      noCondition: $("#conditionInput").checked, source: $("#sourceInput").value }));
   }
   function restorePrefs() {
     let p = {};
@@ -626,6 +648,7 @@
     else $("#langInput").value = "auto";
     if (p.prompt) $("#promptInput").value = p.prompt;
     $("#conditionInput").checked = !!p.noCondition;
+    if (["auto", "captions", "whisper"].includes(p.source)) $("#sourceInput").value = p.source;
   }
   function updateModelHint() {
     const key = MODEL_KEYS[$("#modelInput").value];
@@ -687,7 +710,8 @@
     } else {
       const urls = $("#urlInput").value.split(/\s+/).filter(Boolean);
       if (!urls.length) return flag("error", t("flag.noUrl"), t("flag.noUrlDesc"));
-      items = urls.map((u) => { const fd = form(); fd.append("url", u); fd.append("cookies_browser", $("#cookiesInput").value); return fd; });
+      items = urls.map((u) => { const fd = form(); fd.append("url", u); fd.append("cookies_browser", $("#cookiesInput").value);
+        fd.append("transcript_source", $("#sourceInput").value); return fd; });
     }
     savePrefs();
     // Ask once, on a click, so a finished job can notify while the tab is in the background.
@@ -917,6 +941,7 @@
   function timingLine(tm) {
     if (!tm) return "";
     const parts = [
+      tm.captions != null ? t("timing.captions", { d: fmtDur(tm.captions) }) : "",
       tm.download != null ? t("timing.download", { d: fmtDur(tm.download) }) : "",
       tm.model_load != null ? t("timing.model", { d: fmtDur(tm.model_load) }) : "",
       tm.transcribe != null ? t("timing.transcribe", { d: fmtDur(tm.transcribe) }) : "",
@@ -939,12 +964,13 @@
       d.duration ? `<span>· ${esc(fmtDur(d.duration))}</span>` : "",
       d.elapsed ? `<span>· ${esc(t("drawer.processed", { d: fmtDur(d.elapsed) }))}</span>` : "",
       d.disk_bytes ? `<span>· ${esc(t("drawer.disk", { size: fmtSize(d.disk_bytes) }))}</span>` : "",
+      d.transcript_source ? `<span>· ${esc(t("drawer.src." + d.transcript_source))}</span>` : "",
       d.edited ? `<span>· ${esc(t("drawer.edited"))}</span>` : "",
     ].join("") + timingLine(d.timings);
     $("#dTitle").textContent = d.title || "";
 
     // Action bar — only re-rendered when status/outputs change so an open dropdown survives polling.
-    const actionsKey = `${lang}:${d.status}:${(d.outputs || []).join()}:${d.media || ""}`;
+    const actionsKey = `${lang}:${d.status}:${(d.outputs || []).join()}:${d.media || ""}:${d.transcript_source || ""}`;
     const canRerun = d.source !== "upload" || !!d.media;
     if ($("#dActions").dataset.key !== actionsKey) {
       const a = [];
@@ -954,7 +980,8 @@
           <div class="dropdown__menu" hidden>${["srt", "vtt", "txt", "json"].map((f) => downloadItem(d, f)).join("")}</div></div>`);
         a.push(`<button class="btn" data-act="copy">${esc(t("act.copy"))}</button>`);
         a.push(`<button class="btn" data-act="reveal">${esc(t("act.reveal"))}</button>`);
-        if (canRerun) a.push(`<button class="btn" data-act="retry">${esc(t("act.rerun"))}</button>`);
+        if (d.transcript_source) a.push(`<button class="btn" data-act="whisper">${esc(t("act.whisper"))}</button>`);
+        else if (canRerun) a.push(`<button class="btn" data-act="retry">${esc(t("act.rerun"))}</button>`);
       }
       if (ACTIVE.has(d.status)) a.push(`<button class="btn" data-act="cancel">${esc(t("act.cancel"))}</button>`);
       if ((d.status === "error" || d.status === "cancelled") && canRerun) a.push(`<button class="btn btn--primary" data-act="retry">${esc(t("act.retry"))}</button>`);
@@ -983,9 +1010,10 @@
       $("#dPlayer").innerHTML = `<${tag} controls preload="metadata" src="/api/jobs/${d.id}/media?v=${encodeURIComponent(d.media)}"></${tag}>`;
       const media = $("#dPlayer " + tag);
       media.addEventListener("timeupdate", () => highlightAt(media.currentTime));
-    } else if (!d.media && state.mediaFor !== `none:${lang}:${!!d.media_removed}`) {
-      state.mediaFor = `none:${lang}:${!!d.media_removed}`;
-      $("#dPlayer").innerHTML = d.media_removed ? `<p class="player__note">${esc(t("drawer.mediaRemoved"))}</p>` : "";
+    } else if (!d.media && state.mediaFor !== `none:${lang}:${!!d.media_removed}:${d.transcript_source || ""}`) {
+      state.mediaFor = `none:${lang}:${!!d.media_removed}:${d.transcript_source || ""}`;
+      const note = d.media_removed ? "drawer.mediaRemoved" : d.transcript_source ? "drawer.noMediaCaptions" : "";
+      $("#dPlayer").innerHTML = note ? `<p class="player__note">${esc(t(note))}</p>` : "";
     }
     $("#dSegHint").hidden = d.status !== "done";
 
@@ -1304,7 +1332,10 @@
           flag("info", t("flag.cancelled"), d.title);
           break;
         case "retry":
-          await api(`/api/jobs/${d.id}/retry`, { method: "POST" });
+        case "whisper":
+          await api(`/api/jobs/${d.id}/retry`, act === "whisper" ? {
+            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ transcript_source: "whisper" }),
+          } : { method: "POST" });
           state.renderedSegKey = "";
           state.segCache = null;
           flag("info", t("flag.requeued"), d.title);

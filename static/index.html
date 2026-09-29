@@ -103,6 +103,15 @@
               </select>
               <p class="field__help" data-i18n="create.cookiesHelp">For videos that require login, e.g. your campus LMS.</p>
             </div>
+            <div class="field">
+              <label class="field__label" for="sourceInput" data-i18n="create.sourceLabel">Transcript source</label>
+              <select class="select" id="sourceInput">
+                <option value="auto" data-i18n="create.source.auto">Uploaded subtitles if available, else Whisper</option>
+                <option value="captions" data-i18n="create.source.captions">Any subtitles, incl. auto-generated (fastest)</option>
+                <option value="whisper" data-i18n="create.source.whisper">Always Whisper (best quality)</option>
+              </select>
+              <p class="field__help" data-i18n="create.sourceHelp">Subtitles skip the audio download and transcription. Auto-generated ones often lack punctuation.</p>
+            </div>
           </div>
 
           <div class="field">
