@@ -13,7 +13,7 @@
   // ---------------------------------------------------------------- i18n
   const I18N = {
     en: {
-      "nav.transcripts": "Transcripts",
+      "nav.transcripts": "Home",
       "health.checking": "Checking…",
       "health.ok": "Ready · running locally",
       "health.missing": "{n} tool(s) missing",
@@ -246,7 +246,7 @@
     },
 
     id: {
-      "nav.transcripts": "Transkrip",
+      "nav.transcripts": "Beranda",
       "health.checking": "Memeriksa…",
       "health.ok": "Siap · berjalan lokal",
       "health.missing": "{n} tool belum ada",
