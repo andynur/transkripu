@@ -159,6 +159,28 @@
       "chat.s1": "What is the main idea, in simple words?",
       "chat.s2": "List the 3 most important takeaways.",
       "chat.s3": "Quiz me with 3 questions, then check my answers.",
+      "chat.suggesting": "Finding questions about this recording…", "chat.followups": "Ask next",
+      "chat.edit": "Edit", "chat.regen": "Regenerate", "chat.editing": "Editing your last question", "chat.editCancel": "Cancel",
+      "chapters.title": "Chapters", "chapters.intro": "Split the recording into titled chapters you can jump to.",
+      "chapters.generate": "Find chapters", "chapters.regenerate": "Redo", "chapters.regenerateIn": "Redo in {lang}",
+      "chapters.running": "Finding chapters…", "chapters.failed": "Could not find chapters",
+      "quiz.title": "Quiz", "quiz.intro": "Test yourself with multiple-choice questions written from this recording.",
+      "quiz.make": "{n} questions", "quiz.new": "New quiz", "quiz.running": "Writing the quiz…", "quiz.failed": "Could not write the quiz",
+      "quiz.check": "Check answers", "quiz.score": "Score {s}/{n}", "quiz.best": "Best {s}/{n}", "quiz.unanswered": "{n} not answered yet",
+      "quiz.correct": "Correct", "quiz.wrong": "Not quite", "quiz.retake": "Try again",
+      "act.notes": "Study notes", "act.notes.sub": ".md with chapters, recap and chat",
+      "act.print": "Print / PDF", "act.print.sub": "Chapters, recap and chat, ready to print",
+      "notes.chapters": "Chapters", "notes.recap": "Recap", "notes.chat": "Questions & answers", "notes.q": "Q",
+      "flag.notesSaved": "Study notes downloaded",
+      "tags.placeholder": "+ tag", "tags.remove": "Remove tag {tag}", "tags.label": "Tags", "filter.tags": "Filter by tag",
+      "search.inTranscripts": "Found in transcripts", "search.more": "+{n} more in this transcript", "search.searching": "Searching transcripts…",
+      "estimate.len": "Length {d}", "estimate.eta": "≈ {d} to transcribe", "estimate.based": "based on {n} earlier jobs with this model",
+      "onboard.s1": "Add a recording", "onboard.s1d": "Drop a file or paste a YouTube or web link above.",
+      "onboard.s2": "Pick a model", "onboard.s2d": "Turbo is fast and accurate enough for most lectures.",
+      "onboard.s3": "Study with AI", "onboard.s3d": "Get a recap, chapters and a quiz, and ask questions with clickable timestamps.",
+      "onboard.ai": "Recap, chat, chapters and quizzes need an AI provider.", "onboard.aiBtn": "Set up AI",
+      "err.ai_bad_reply": "The AI reply could not be read. Try again.", "err.study_busy": "This is already being generated.",
+      "err.study_not_ready": "The transcript is not finished yet.", "err.chat_empty": "There is no question to answer again.",
       "chat.placeholder": "Ask a question…", "chat.send": "Send", "chat.copy": "Copy",
       "chat.clear": "Clear chat", "chat.confirmClear": "Delete the whole chat for this transcript?",
       "chat.thinking": "Thinking…", "chat.failed": "No answer", "chat.stop": "Stop",
@@ -392,6 +414,28 @@
       "chat.s1": "Apa ide utamanya, dengan bahasa sederhana?",
       "chat.s2": "Sebutkan 3 poin terpenting.",
       "chat.s3": "Beri saya kuis 3 soal, lalu periksa jawaban saya.",
+      "chat.suggesting": "Mencari pertanyaan tentang rekaman ini…", "chat.followups": "Tanya selanjutnya",
+      "chat.edit": "Ubah", "chat.regen": "Buat ulang", "chat.editing": "Mengubah pertanyaan terakhir", "chat.editCancel": "Batal",
+      "chapters.title": "Bab", "chapters.intro": "Bagi rekaman menjadi bab berjudul yang bisa langsung dilompati.",
+      "chapters.generate": "Buat bab", "chapters.regenerate": "Ulangi", "chapters.regenerateIn": "Ulangi dalam {lang}",
+      "chapters.running": "Mencari bab…", "chapters.failed": "Gagal membuat bab",
+      "quiz.title": "Kuis", "quiz.intro": "Uji pemahaman dengan soal pilihan ganda yang dibuat dari rekaman ini.",
+      "quiz.make": "{n} soal", "quiz.new": "Kuis baru", "quiz.running": "Menyusun kuis…", "quiz.failed": "Gagal menyusun kuis",
+      "quiz.check": "Periksa jawaban", "quiz.score": "Skor {s}/{n}", "quiz.best": "Terbaik {s}/{n}", "quiz.unanswered": "{n} belum dijawab",
+      "quiz.correct": "Benar", "quiz.wrong": "Belum tepat", "quiz.retake": "Coba lagi",
+      "act.notes": "Catatan belajar", "act.notes.sub": ".md berisi bab, rekap, dan chat",
+      "act.print": "Cetak / PDF", "act.print.sub": "Bab, rekap, dan chat, siap dicetak",
+      "notes.chapters": "Bab", "notes.recap": "Rekap", "notes.chat": "Tanya jawab", "notes.q": "T",
+      "flag.notesSaved": "Catatan belajar diunduh",
+      "tags.placeholder": "+ tag", "tags.remove": "Hapus tag {tag}", "tags.label": "Tag", "filter.tags": "Saring per tag",
+      "search.inTranscripts": "Ditemukan di transkrip", "search.more": "+{n} lagi di transkrip ini", "search.searching": "Mencari di transkrip…",
+      "estimate.len": "Durasi {d}", "estimate.eta": "≈ {d} untuk ditranskrip", "estimate.based": "berdasarkan {n} pekerjaan sebelumnya dengan model ini",
+      "onboard.s1": "Tambah rekaman", "onboard.s1d": "Seret file atau tempel link YouTube/web di atas.",
+      "onboard.s2": "Pilih model", "onboard.s2d": "Turbo cepat dan cukup akurat untuk sebagian besar kuliah.",
+      "onboard.s3": "Belajar dengan AI", "onboard.s3d": "Dapatkan rekap, bab, dan kuis, lalu bertanya dengan timestamp yang bisa diklik.",
+      "onboard.ai": "Rekap, chat, bab, dan kuis memerlukan provider AI.", "onboard.aiBtn": "Atur AI",
+      "err.ai_bad_reply": "Balasan AI tidak bisa dibaca. Coba lagi.", "err.study_busy": "Sedang dibuat.",
+      "err.study_not_ready": "Transkrip belum selesai.", "err.chat_empty": "Belum ada pertanyaan untuk dijawab ulang.",
       "chat.placeholder": "Tulis pertanyaan…", "chat.send": "Kirim", "chat.copy": "Salin",
       "chat.clear": "Hapus chat", "chat.confirmClear": "Hapus seluruh chat untuk transkrip ini?",
       "chat.thinking": "Sedang berpikir…", "chat.failed": "Tidak ada jawaban", "chat.stop": "Hentikan",
@@ -511,7 +555,9 @@
   const state = {
     tab: "file", files: [], jobs: [], models: [], languages: [],
     openId: null, detail: null, renderedSegKey: "", renderedSegCount: 0, segCache: null, mediaFor: null,
-    historyQuery: "", statusFilter: "all", segQuery: "", activeSeg: -1, health: null, chat: null, recapLang: null, chatLang: null,
+    historyQuery: "", statusFilter: "all", segQuery: "", activeSeg: -1, health: null, chat: null, recapLang: null, chatLang: null, starters: {},
+    studyLang: {}, studyBusy: {}, studyError: {}, quizPick: {}, quizResult: null, chatEdit: false,
+    tagFilter: null, search: null, fileDur: 0,
     settings: null, settingsOpen: false,
   };
 
@@ -660,8 +706,43 @@
     state.tab = tab;
     $$(".tab").forEach((el) => el.classList.toggle("is-active", el.dataset.tab === tab));
     $$(".tabpanel").forEach((p) => (p.hidden = p.dataset.panel !== tab));
+    renderEstimate();
   }
-  function setFiles(list) { state.files = [...(list || [])]; renderFile(); }
+  function setFiles(list) { state.files = [...(list || [])]; renderFile(); measureFiles(); }
+
+  /** Length of one media file from its metadata (0 when the browser can't read it). */
+  const mediaLength = (file) => new Promise((resolve) => {
+    const el = document.createElement(file.type.startsWith("video") ? "video" : "audio");
+    const url = URL.createObjectURL(file);
+    const done = (sec) => { clearTimeout(timer); URL.revokeObjectURL(url); resolve(Number.isFinite(sec) ? sec : 0); };
+    const timer = setTimeout(() => done(0), 5000);
+    el.preload = "metadata";
+    el.onloadedmetadata = () => done(el.duration);
+    el.onerror = () => done(0);
+    el.src = url;
+  });
+  async function measureFiles() {
+    const files = state.files;
+    state.fileDur = 0;
+    renderEstimate();
+    const lengths = await Promise.all(files.map(mediaLength));
+    if (files !== state.files) return; // selection changed meanwhile
+    state.fileDur = lengths.reduce((a, b) => a + b, 0);
+    renderEstimate();
+  }
+  /** Median speed (media seconds per second of transcription) of earlier jobs with `model`. */
+  function modelSpeed(model) {
+    const r = state.jobs.filter((j) => j.status === "done" && j.options?.model === model && !j.transcript_source
+      && j.duration > 0 && j.timings?.transcribe > 0).map((j) => j.duration / j.timings.transcribe).sort((a, b) => a - b);
+    return r.length ? { x: r[r.length >> 1], n: r.length } : null;
+  }
+  function renderEstimate() {
+    const el = $("#estimate");
+    if (state.tab !== "file" || !state.fileDur) { el.textContent = ""; return; }
+    const speed = modelSpeed($("#modelInput").value);
+    el.textContent = [t("estimate.len", { d: fmtDur(state.fileDur) }),
+      speed ? `${t("estimate.eta", { d: fmtDur(state.fileDur / speed.x) })} (${t("estimate.based", { n: speed.n })})` : ""].filter(Boolean).join(" · ");
+  }
   function renderFile() {
     const fs = state.files, size = fs.reduce((n, f) => n + f.size, 0);
     $("#dropzone").classList.toggle("has-file", fs.length > 0);
@@ -805,12 +886,23 @@
   function renderJobs() {
     const q = state.historyQuery.toLowerCase();
     const byStatus = FILTERS[state.statusFilter];
-    const jobs = state.jobs.filter((j) => byStatus(j) && (!q || (j.title || "").toLowerCase().includes(q)));
+    const allTags = [...new Set(state.jobs.flatMap((j) => j.tags || []))].sort((a, b) => a.localeCompare(b));
+    if (state.tagFilter && !allTags.includes(state.tagFilter)) state.tagFilter = null;
+    const tagKey = `${allTags.join("\u0001")}|${state.tagFilter || ""}`;
+    if ($("#tagFilter").dataset.key !== tagKey) {
+      $("#tagFilter").dataset.key = tagKey;
+      $("#tagFilter").hidden = !allTags.length;
+      $("#tagFilter").innerHTML = allTags.map((tag) => `<button type="button" class="chip chip--tag" data-tag="${esc(tag)}" aria-pressed="${tag === state.tagFilter}">#${esc(tag)}</button>`).join("");
+    }
+    const jobs = state.jobs.filter((j) => byStatus(j) && (!state.tagFilter || (j.tags || []).includes(state.tagFilter))
+      && (!q || (j.title || "").toLowerCase().includes(q) || (j.tags || []).some((tag) => tag.toLowerCase().includes(q))));
     $$("#statusFilter .chip").forEach((c) => {
       c.setAttribute("aria-pressed", String(c.dataset.filter === state.statusFilter));
       $(".chip__count", c).textContent = state.jobs.filter(FILTERS[c.dataset.filter]).length;
     });
     $("#emptyState").hidden = state.jobs.length > 0;
+    const chatProvider = state.settings?.providers?.[routeProvider("chat")];
+    $("#emptyAi").hidden = !chatProvider || ["ready", "local"].includes(chatProvider.status);
     $("#noMatch").hidden = !state.jobs.length || jobs.length > 0;
     // Show the running job's progress in the browser tab title.
     const running = state.jobs.find((j) => j.status === "transcribing" || j.status === "downloading");
@@ -860,11 +952,12 @@
       eta(j),
     ].filter(Boolean).join(" · ");
     const selected = state.openId === j.id;
-    const key = [lang, j.title, j.status, isUrl, selected, j.created].join("|");
+    const tags = (j.tags || []).map((tag) => `<span class="job-tag">#${esc(tag)}</span>`).join("");
+    const key = [lang, j.title, j.status, isUrl, selected, j.created, (j.tags || []).join("\u0001")].join("|");
     const html = `<tr data-id="${esc(j.id)}" tabindex="0" class="${selected ? "is-selected" : ""}">
         <td><div class="job-title">
           <span class="job-title__icon job-title__icon--${isUrl ? "url" : "upload"}">${isUrl ? ICON_URL : ICON_FILE}</span>
-          <span class="job-title__text"><span class="job-title__name" title="${esc(j.title)}">${esc(j.title)}</span><span class="job-title__sub">${esc(sub)}</span></span>
+          <span class="job-title__text"><span class="job-title__name" title="${esc(j.title)}">${esc(j.title)}${tags}</span><span class="job-title__sub">${esc(sub)}</span></span>
         </div></td>
         <td>${lozenge(j.status)}</td>
         <td><div class="progress-cell"><div class="progress ${barCls}"><div class="progress__bar" style="width:${pct}%"></div></div><span>${pct}%</span></div></td>
@@ -882,7 +975,9 @@
     $("#dActions").dataset.key = "";
     $("#dRecap").dataset.key = "";
     clearTimeout(chatTimer);
-    Object.assign(state, { chat: null, recapLang: null, chatLang: null });
+    Object.assign(state, { chat: null, recapLang: null, chatLang: null, studyLang: {}, studyError: {}, quizPick: {}, quizResult: null, chatEdit: false });
+    ["#dChapters", "#dQuiz", "#dTags"].forEach((sel) => { $(sel).dataset.key = ""; });
+    $("#chatEdit").hidden = true;
     $("#chatLang").dataset.key = "";
     $("#chatInput").value = "";
     $("#blanket").hidden = false;
@@ -977,7 +1072,9 @@
       if (d.status === "done") {
         a.push(`<div class="dropdown"><button class="btn btn--primary" data-act="dl-menu">${esc(t("act.download"))}
           <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M8.3 10.3a1 1 0 0 1 1.4 0L12 12.6l2.3-2.3a1 1 0 1 1 1.4 1.4l-3 3a1 1 0 0 1-1.4 0l-3-3a1 1 0 0 1 0-1.4z"/></svg></button>
-          <div class="dropdown__menu" hidden>${["srt", "vtt", "txt", "json"].map((f) => downloadItem(d, f)).join("")}</div></div>`);
+          <div class="dropdown__menu" hidden>${["srt", "vtt", "txt", "json"].map((f) => downloadItem(d, f)).join("")}
+          <button type="button" class="dropdown__item" data-act="notes-md">${esc(t("act.notes"))}<small>${esc(t("act.notes.sub"))}</small></button>
+          <button type="button" class="dropdown__item" data-act="notes-print">${esc(t("act.print"))}<small>${esc(t("act.print.sub"))}</small></button></div></div>`);
         a.push(`<button class="btn" data-act="copy">${esc(t("act.copy"))}</button>`);
         a.push(`<button class="btn" data-act="reveal">${esc(t("act.reveal"))}</button>`);
         if (d.transcript_source) a.push(`<button class="btn" data-act="whisper">${esc(t("act.whisper"))}</button>`);
@@ -1017,8 +1114,11 @@
     }
     $("#dSegHint").hidden = d.status !== "done";
 
+    renderTags(d);
+    renderChapters(d);
     renderRecap(d);
     renderChat();
+    renderQuiz(d);
     renderSegments(d);
   }
 
@@ -1141,12 +1241,34 @@
     if (c.busy) chatTimer = setTimeout(loadChat, 600);
   }
 
-  function chatItem(m, dur) {
-    if (m.role === "user") return `<li class="msg msg--user">${esc(m.text)}</li>`;
+  const askChips = (list) => `<div class="chips">${list
+    .map((q) => `<button type="button" class="chip" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>`;
+
+  /** Starter questions for an empty chat, generated once per job + answer language (cached server-side). */
+  async function loadStarters(id, out) {
+    const key = `${id}:${out}`;
+    if (state.starters[key]) return;
+    state.starters[key] = { loading: true };
+    let list = [];
+    try { list = (await api(`/api/jobs/${encodeURIComponent(id)}/chat/suggestions`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lang: out }),
+    })).suggestions || []; } catch { /* keep the fixed starters */ }
+    state.starters[key] = { list };
+    if (state.openId === id) renderChat();
+  }
+
+  const regenBtn = () => `<button type="button" class="btn btn--subtle btn--compact" data-chat="regen">${esc(t("chat.regen"))}</button>`;
+
+  /** One chat bubble. `lastUser` / `last`: the latest question / message, which get Edit / Regenerate. */
+  function chatItem(m, dur, lastUser = false, last = false) {
+    if (m.role === "user") {
+      return `<li class="msg msg--user">${esc(m.text)}</li>${lastUser
+        ? `<li class="msg-tools"><button type="button" class="btn btn--subtle btn--compact" data-chat="edit">${esc(t("chat.edit"))}</button></li>` : ""}`;
+    }
     if (m.role === "error") {
       const code = m.meta?.error_code;
       return `<li class="msg msg--error"><b>${esc(t("chat.failed"))}</b> · ${esc(errorText(code, m.text))} ${code?.startsWith("llm_") ? settingsLink() : ""}
-        ${showErrorDetail(code, m.text) ? `<pre class="section-msg__pre">${esc(m.text)}</pre>` : ""}</li>`;
+        ${showErrorDetail(code, m.text) ? `<pre class="section-msg__pre">${esc(m.text)}</pre>` : ""}${last ? `<div class="msg__actions">${regenBtn()}</div>` : ""}</li>`;
     }
     const meta = [
       m.meta?.provider ? `${providerLabel(m.meta.provider)} · ${m.meta.model || ""}` : "",
@@ -1155,7 +1277,7 @@
       m.meta?.stopped ? t("chat.stopped") : "",
     ].filter(Boolean).join(" · ");
     return `<li class="msg msg--assistant"><div class="md">${renderMarkdown(m.text, dur)}</div>
-      <div class="msg__actions"><span class="msg__meta">${esc(meta)}</span><button type="button" class="btn btn--subtle btn--compact" data-copy="${m.id}">${esc(t("chat.copy"))}</button></div></li>`;
+      <div class="msg__actions"><span class="msg__meta">${esc(meta)}</span>${last ? regenBtn() : ""}<button type="button" class="btn btn--subtle btn--compact" data-copy="${m.id}">${esc(t("chat.copy"))}</button></div></li>`;
   }
 
   /** Chat section of a finished job. Re-rendered only when messages or the streamed answer change. */
@@ -1164,11 +1286,13 @@
     box.hidden = !d || d.status !== "done";
     if (box.hidden || !c || c.id !== d.id) return;
     const last = c.messages[c.messages.length - 1];
-    const baseKey = `${lang}:${c.messages.length}:${last?.id ?? ""}:${c.busy}:${d.id}`;
+    const out = chatLangOf(d);
+    const starters = c.messages.length || c.busy ? null : state.starters[`${d.id}:${out}`];
+    if (!c.messages.length && !c.busy && !starters) loadStarters(d.id, out);
+    const baseKey = `${lang}:${c.messages.length}:${last?.id ?? ""}:${c.busy}:${d.id}:${out}:${starters?.loading ?? starters?.list?.length ?? ""}`;
     const key = `${baseKey}:${(c.partial || "").length}`;
     $("#chatSend").hidden = c.busy;
     $("#chatStop").hidden = !c.busy;
-    const out = chatLangOf(d);
     const helpKey = `${lang}:${out}:${routeProvider("chat") || ""}`;
     if ($("#chatLang").dataset.key !== helpKey) {
       $("#chatLang").dataset.key = helpKey;
@@ -1190,17 +1314,24 @@
     }
     list.dataset.base = baseKey;
 
-    const items = c.messages.map((m) => chatItem(m, d.duration));
+    const lastUser = [...c.messages].reverse().find((m) => m.role === "user");
+    const items = c.messages.map((m) => chatItem(m, d.duration, !c.busy && m === lastUser, !c.busy && m === last && m !== lastUser));
     if (c.busy) {
       items.push(c.partial
         ? `<li class="msg msg--assistant is-streaming"><div class="md">${renderMarkdown(c.partial, d.duration)}</div></li>`
         : `<li class="msg msg--typing"><span class="spinner"></span> ${esc(t("chat.thinking"))}</li>`);
     }
+    // Follow-up questions only under the latest answer, so the next step is always one click away.
+    if (!c.busy && last?.role === "assistant" && last.meta?.suggestions?.length) {
+      items.push(`<li class="chat__followups"><span class="chat__followups-label">${esc(t("chat.followups"))}</span>${askChips(last.meta.suggestions)}</li>`);
+    }
     if (!items.length) {
-      items.push(`<li class="chat__empty"><p>${esc(t("chat.intro"))}</p><div class="chips">${["chat.s1", "chat.s2", "chat.s3"]
-        .map((k) => `<button type="button" class="chip" data-ask="${esc(t(k))}">${esc(t(k))}</button>`).join("")}</div></li>`);
+      const list = starters?.list?.length ? starters.list : ["chat.s1", "chat.s2", "chat.s3"].map((k) => t(k));
+      items.push(`<li class="chat__empty"><p>${esc(t("chat.intro"))}</p>${askChips(list)}${starters?.loading
+        ? `<p class="chat__suggesting"><span class="spinner"></span> ${esc(t("chat.suggesting"))}</p>` : ""}</li>`);
     }
     list.innerHTML = items.join("");
+    list.setAttribute("aria-busy", String(!!c.busy));
     if (nearBottom || grew) list.scrollTop = list.scrollHeight;
   }
 
@@ -1208,6 +1339,7 @@
     const d = state.detail;
     text = (text || "").trim();
     if (!d || !text || state.chat?.busy) return;
+    if (state.chatEdit) return retryChat(text);
     try {
       const r = await api(`/api/jobs/${d.id}/chat`, {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text, lang: chatLangOf(d) }),
@@ -1220,6 +1352,226 @@
     } catch (err) {
       flag("error", t("flag.chatFailed"), err.message);
     }
+  }
+
+  /** Answer the last question again, reworded when `text` is given (Edit), else as is (Regenerate). */
+  async function retryChat(text = "") {
+    const d = state.detail;
+    if (!d || state.chat?.busy) return;
+    try {
+      await api(`/api/jobs/${d.id}/chat/retry`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text, lang: chatLangOf(d) }),
+      });
+      setChatEdit(false);
+      $("#chatInput").value = "";
+      state.chat = null; // earlier answer removed: reload the whole chat
+      loadChat();
+    } catch (err) {
+      flag("error", t("flag.chatFailed"), err.message);
+    }
+  }
+  function setChatEdit(on) {
+    state.chatEdit = on;
+    $("#chatEdit").hidden = !on;
+    if (!on) return;
+    const q = [...(state.chat?.messages || [])].reverse().find((m) => m.role === "user");
+    if (!q) return setChatEdit(false);
+    $("#chatInput").value = q.text;
+    $("#chatInput").focus();
+  }
+
+  // ---------------------------------------------------------------- tags
+  function renderTags(d) {
+    const box = $("#dTags"), tags = d.tags || [];
+    const key = `${lang}:${d.id}:${tags.join("\u0001")}`;
+    if (box.dataset.key === key) return;
+    box.dataset.key = key;
+    const refocus = document.activeElement?.id === "tagInput";
+    const known = [...new Set(state.jobs.flatMap((j) => j.tags || []))].filter((tag) => !tags.includes(tag));
+    box.innerHTML = tags.map((tag) => `<span class="tag">#${esc(tag)}<button type="button" class="tag__rm" data-tag-rm="${esc(tag)}"
+        aria-label="${esc(t("tags.remove", { tag }))}" title="${esc(t("tags.remove", { tag }))}">×</button></span>`).join("")
+      + (tags.length < 10 ? `<input class="tag-input" id="tagInput" maxlength="30" list="tagList" placeholder="${esc(t("tags.placeholder"))}" aria-label="${esc(t("tags.label"))}">
+        <datalist id="tagList">${known.map((tag) => `<option value="${esc(tag)}">`).join("")}</datalist>` : "");
+    if (refocus) $("#tagInput")?.focus();
+  }
+  async function saveTags(tags) {
+    const d = state.detail;
+    if (!d) return;
+    try {
+      await api(`/api/jobs/${d.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tags }) });
+      await refreshJobs();
+      await refreshDetail();
+    } catch (err) {
+      flag("error", t("flag.actionFailed"), err.message);
+    }
+  }
+
+  // ---------------------------------------------------------------- chapters & quiz (recap route, on demand)
+  const studyLangOf = (kind, d) => state.studyLang[kind] || d[kind]?.lang || d.ai_lang_default || "en";
+  const studyBusy = (kind, d) => state.studyBusy[kind] === d.id;
+
+  async function generateStudy(kind, extra = {}) {
+    const d = state.detail;
+    if (!d || studyBusy(kind, d)) return;
+    state.studyBusy[kind] = d.id;
+    delete state.studyError[kind];
+    if (kind === "quiz") { state.quizPick = {}; state.quizResult = null; }
+    renderDetail(d);
+    try {
+      await api(`/api/jobs/${d.id}/${kind}`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lang: studyLangOf(kind, d), ...extra }),
+      });
+    } catch (err) {
+      if (state.detail?.id === d.id) state.studyError[kind] = err.message;
+    }
+    delete state.studyBusy[kind];
+    if (state.openId === d.id) await refreshDetail();
+  }
+
+  const studyHead = (kind, d, actions) => `<div class="recap__head"><h3>${kind === "chapters"
+    ? '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M4 5h2v2H4V5zm4 0h12v2H8V5zm-4 6h2v2H4v-2zm4 0h12v2H8v-2zm-4 6h2v2H4v-2zm4 0h12v2H8v-2z"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2v2zm2.1-7.7-.9.9A3.4 3.4 0 0 0 13 15h-2v-.5c0-1.1.4-2.1 1.2-2.8l1.2-1.3A2 2 0 1 0 10 9H8a4 4 0 1 1 7.1 2.3z"/></svg>'}
+    <span>${esc(t(kind + ".title"))}</span></h3><div class="recap__actions">${actions.join("")}</div></div>`;
+  const studyError = (kind) => state.studyError[kind] ? `<div class="section-msg section-msg--error"><div><h4 class="section-msg__title">${esc(t(kind + ".failed"))}</h4>
+    <div class="section-msg__body">${esc(state.studyError[kind])} ${settingsLink()}</div></div></div>` : "";
+
+  function renderChapters(d) {
+    const box = $("#dChapters");
+    box.hidden = d.status !== "done";
+    if (box.hidden) return;
+    const ch = d.chapters, out = studyLangOf("chapters", d), busy = studyBusy("chapters", d);
+    const key = `${lang}:${d.id}:${ch?.created || ""}:${out}:${busy}:${state.studyError.chapters || ""}`;
+    if (box.dataset.key === key) return;
+    box.dataset.key = key;
+    const actions = busy ? [] : [aiLangToggle("chapters", out), ch
+      ? `<button type="button" class="btn btn--${out !== ch.lang ? "primary" : "subtle"} btn--compact" data-study="chapters">${esc(out !== ch.lang ? t("chapters.regenerateIn", { lang: t("lang." + out) }) : t("chapters.regenerate"))}</button>`
+      : `<button type="button" class="btn btn--primary btn--compact" data-study="chapters">${esc(t("chapters.generate"))}</button>`];
+    const body = busy ? `<p class="recap__running"><span class="spinner"></span> ${esc(t("chapters.running"))}</p>`
+      : ch ? `<ol class="chapter-list">${ch.items.map((c) => `<li><button type="button" class="chapter" data-seek="${c.start}">
+          <span class="chapter__time">${clock(c.start)}</span><span class="chapter__title">${esc(c.title)}</span></button></li>`).join("")}</ol>`
+      : `<p class="recap__intro">${esc(t("chapters.intro"))}</p>`;
+    box.innerHTML = studyHead("chapters", d, actions) + studyError("chapters") + body;
+    state.activeChapter = null;
+  }
+
+  function renderQuiz(d) {
+    const box = $("#dQuiz");
+    box.hidden = d.status !== "done";
+    if (box.hidden) return;
+    const quiz = d.quiz, out = studyLangOf("quiz", d), busy = studyBusy("quiz", d);
+    const res = state.quizResult?.created === quiz?.created ? state.quizResult : null;
+    const key = `${lang}:${d.id}:${quiz?.created || ""}:${out}:${busy}:${res?.at || ""}:${quiz?.best?.score ?? ""}:${state.studyError.quiz || ""}`;
+    if (box.dataset.key === key) return;
+    box.dataset.key = key;
+    const sizes = (primary) => [5, 10].map((n) => `<button type="button" class="btn btn--${primary ? "primary" : "subtle"} btn--compact" data-study="quiz" data-count="${n}">${esc(t("quiz.make", { n }))}</button>`);
+    const actions = busy ? [] : [aiLangToggle("quiz", out),
+      quiz?.best ? `<span class="quiz__best">${esc(t("quiz.best", { s: quiz.best.score, n: quiz.best.total }))}</span>` : "",
+      ...(quiz ? [`<span class="quiz__new">${esc(t("quiz.new"))}:</span>`, ...sizes(out !== quiz.lang)] : sizes(true))];
+    let body;
+    if (busy) body = `<p class="recap__running"><span class="spinner"></span> ${esc(t("quiz.running"))}</p>`;
+    else if (!quiz) body = `<p class="recap__intro">${esc(t("quiz.intro"))}</p>`;
+    else {
+      body = `<ol class="quiz__list">${quiz.questions.map((q, i) => {
+        const r = res?.results[i];
+        return `<li class="quiz__q${r ? (r.correct ? " is-correct" : " is-wrong") : ""}"><fieldset><legend>${mdInline(q.q, d.duration)}</legend>
+          ${q.options.map((o, k) => `<label class="quiz__opt${r && k === r.answer ? " is-answer" : ""}${r && k === r.picked && !r.correct ? " is-picked" : ""}">
+            <input type="radio" name="quiz${i}" value="${k}" ${state.quizPick[i] === k ? "checked" : ""} ${r ? "disabled" : ""}> <span>${mdInline(o, d.duration)}</span></label>`).join("")}
+          ${r ? `<p class="quiz__explain"><b>${esc(t(r.correct ? "quiz.correct" : "quiz.wrong"))}.</b> ${mdInline(r.explain || "", d.duration)}${
+            q.start != null ? ` <button type="button" class="ts" data-ts="${q.start}">${clock(q.start)}</button>` : ""}</p>` : ""}
+        </fieldset></li>`;
+      }).join("")}</ol>
+      <div class="quiz__foot">${res
+        ? `<span class="quiz__score" role="status">${esc(t("quiz.score", { s: res.score, n: res.total }))}</span>
+           <button type="button" class="btn btn--compact" data-quiz="retake">${esc(t("quiz.retake"))}</button>`
+        : `<button type="button" class="btn btn--primary btn--compact" data-quiz="check">${esc(t("quiz.check"))}</button>
+           <span class="quiz__hint" id="quizHint"></span>`}</div>`;
+    }
+    box.innerHTML = studyHead("quiz", d, actions) + studyError("quiz") + body;
+    updateQuizHint();
+  }
+  function updateQuizHint() {
+    const hint = $("#quizHint"), quiz = state.detail?.quiz;
+    if (!hint || !quiz) return;
+    const left = quiz.questions.length - Object.keys(state.quizPick).length;
+    hint.textContent = left ? t("quiz.unanswered", { n: left }) : "";
+  }
+  async function checkQuiz() {
+    const d = state.detail;
+    if (!d?.quiz) return;
+    try {
+      const r = await api(`/api/jobs/${d.id}/quiz/check`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: d.quiz.questions.map((_, i) => state.quizPick[i] ?? null) }),
+      });
+      state.quizResult = { ...r, created: d.quiz.created };
+      await refreshDetail();
+    } catch (err) {
+      flag("error", t("flag.actionFailed"), err.message);
+    }
+  }
+
+  // ---------------------------------------------------------------- study notes export
+  function buildNotes(d) {
+    const out = [`# ${d.title || ""}`, "", [d.duration ? fmtDur(d.duration) : "", fmtDate(d.created), d.url || ""].filter(Boolean).join(" · "), ""];
+    if (d.chapters?.items?.length) {
+      out.push(`## ${t("notes.chapters")}`, "", ...d.chapters.items.map((c) => `- [${clock(c.start)}] ${c.title}`), "");
+    }
+    if (d.recap) out.push(`## ${t("notes.recap")}`, "", d.recap.replace(/^(#+) /gm, "#$1 ").trim(), "");
+    const chat = state.chat?.id === d.id ? state.chat.messages.filter((m) => m.role !== "error") : [];
+    if (chat.length) {
+      out.push(`## ${t("notes.chat")}`, "");
+      for (const m of chat) out.push(m.role === "user" ? `### ${t("notes.q")}: ${m.text.replace(/\s+/g, " ")}` : m.text, "");
+    }
+    return out.join("\n").trim() + "\n";
+  }
+  function printNotes(d) {
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(`<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>${esc(d.title || "Transkripu")}</title>
+      <style>body{font:14px/1.6 -apple-system,system-ui,sans-serif;max-width:720px;margin:32px auto;padding:0 16px}
+      h1{font-size:22px}h2{font-size:18px;margin-top:28px}h3{font-size:15px}button{all:unset}</style></head>
+      <body>${renderMarkdown(buildNotes(d), d.duration)}</body></html>`);
+    w.document.close();
+    w.focus();
+    w.print();
+  }
+
+  // ---------------------------------------------------------------- search in all transcripts
+  let searchTimer = null, searchSeq = 0;
+  function searchTranscripts(q) {
+    clearTimeout(searchTimer);
+    q = q.trim();
+    if (q.length < 2) { state.search = null; return renderSearch(); }
+    state.search = { q, results: state.search?.q === q ? state.search.results : null };
+    renderSearch();
+    searchTimer = setTimeout(async () => {
+      const seq = ++searchSeq;
+      let r;
+      try { r = await api(`/api/search?q=${encodeURIComponent(q)}`); } catch { return; }
+      if (seq !== searchSeq || state.search?.q !== q) return;
+      state.search = { q, results: r.results };
+      renderSearch();
+    }, 300);
+  }
+  function renderSearch() {
+    const box = $("#searchResults"), sr = state.search;
+    box.hidden = !sr || (sr.results && !sr.results.length);
+    if (box.hidden) return;
+    if (!sr.results) { box.innerHTML = `<p class="search-results__head"><span class="spinner"></span> ${esc(t("search.searching"))}</p>`; return; }
+    const q = sr.q.toLowerCase();
+    box.innerHTML = `<p class="search-results__head">${esc(t("search.inTranscripts"))}</p><ul class="search-results__list">${sr.results.map((r) => `
+      <li><div class="search-results__title">${esc(r.title)}</div>${r.hits.map((h) => `<button type="button" class="search-hit" data-job="${esc(r.job_id)}" data-start="${h.start}">
+        <span class="seg__time">${clock(h.start)}</span><span>${highlight(h.text, q)}</span></button>`).join("")}${
+        r.count > r.hits.length ? `<span class="search-results__more">${esc(t("search.more", { n: r.count - r.hits.length }))}</span>` : ""}</li>`).join("")}</ul>`;
+  }
+  async function openHit(id, start) {
+    await openDrawer(id);
+    if (state.openId !== id) return;
+    const media = $("#dPlayer video, #dPlayer audio");
+    if (media) media.currentTime = start;
+    state.activeSeg = -2;
+    highlightAt(start);
+    $(".seg.is-active")?.scrollIntoView({ block: "center" });
   }
 
   /** Escape `text` and wrap case-insensitive matches of `q` in <mark> (matching on raw text, not on entities). */
@@ -1300,6 +1652,13 @@
       const mid = (lo + hi) >> 1;
       if (segs[mid].start <= time + 0.05) { idx = mid; lo = mid + 1; } else hi = mid - 1;
     }
+    const chapters = $$("#dChapters .chapter");
+    let cur = null;
+    for (const c of chapters) if (parseFloat(c.dataset.seek) <= time + 0.05) cur = c;
+    if (cur !== state.activeChapter) {
+      chapters.forEach((c) => c.classList.toggle("is-active", c === cur));
+      state.activeChapter = cur;
+    }
     if (idx === state.activeSeg) return;
     state.activeSeg = idx;
     $$(".seg.is-active").forEach((el) => el.classList.remove("is-active"));
@@ -1350,6 +1709,20 @@
           closeDrawer();
           openSettings();
           return;
+        case "notes-md": {
+          btn.closest(".dropdown__menu").hidden = true;
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(new Blob([buildNotes(d)], { type: "text/markdown" }));
+          a.download = `${(d.title || "notes").replace(/[\\/:*?"<>|]+/g, " ").trim()}.notes.md`;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+          flag("success", t("flag.notesSaved"), d.title);
+          return;
+        }
+        case "notes-print":
+          btn.closest(".dropdown__menu").hidden = true;
+          printNotes(d);
+          return;
         case "recap-copy":
           await navigator.clipboard.writeText(d.recap || "");
           flag("success", t("flag.recapCopied"), d.title);
@@ -1388,6 +1761,7 @@
   async function loadSettings(refresh = false) {
     state.settings = await api("/api/settings" + (refresh ? "?refresh=1" : ""));
     if (state.detail) { $("#dRecap").dataset.key = ""; renderRecap(state.detail); renderChat(true); }
+    renderJobs(); // onboarding hint depends on the chat provider
   }
 
   function saveSettings(patch) {
@@ -1417,6 +1791,7 @@
     focusBeforeSettings = null;
     setTimeout(() => { if (!state.openId && !state.settingsOpen) $("#blanket").hidden = true; }, 220);
     if (state.detail) { $("#dRecap").dataset.key = ""; renderRecap(state.detail); renderChat(true); }
+    renderJobs(); // onboarding hint depends on the chat provider
   }
 
   const modelPlaceholder = (id) => {
@@ -1634,14 +2009,20 @@
   });
 
   $("#createForm").addEventListener("submit", submit);
-  $("#modelInput").addEventListener("change", () => { updateModelHint(); savePrefs(); });
+  $("#modelInput").addEventListener("change", () => { updateModelHint(); savePrefs(); renderEstimate(); });
   $("#langInput").addEventListener("change", savePrefs);
   $("#conditionInput").addEventListener("change", savePrefs);
   // Enter submits; Shift+Enter starts another line for the next URL.
   $("#urlInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("#createForm").requestSubmit(); }
   });
-  $("#historySearch").addEventListener("input", (e) => { state.historyQuery = e.target.value; renderJobs(); });
+  $("#historySearch").addEventListener("input", (e) => { state.historyQuery = e.target.value; renderJobs(); searchTranscripts(e.target.value); });
+  $("#historySearch").addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !e.target.value) return;
+    e.target.value = state.historyQuery = "";
+    renderJobs();
+    searchTranscripts("");
+  });
   $("#statusFilter").addEventListener("click", (e) => {
     const c = e.target.closest(".chip");
     if (c) { state.statusFilter = c.dataset.filter; renderJobs(); }
@@ -1724,6 +2105,7 @@
     if (!b || !state.detail) return;
     const [kind, code] = b.dataset.aiLang.split(":");
     if (kind === "recap") { state.recapLang = code; renderRecap(state.detail); }
+    else if (kind === "chapters" || kind === "quiz") { state.studyLang[kind] = code; renderDetail(state.detail); }
     else { state.chatLang = code; renderChat(true); }
   });
   $("#dRecap").addEventListener("click", (e) => {
@@ -1744,6 +2126,56 @@
       const m = state.chat?.messages.find((x) => String(x.id) === copy.dataset.copy);
       if (m) navigator.clipboard.writeText(m.text).then(() => flag("success", t("flag.chatCopied")));
     }
+  });
+  $("#dChat").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-chat]");
+    if (!b) return;
+    if (b.dataset.chat === "regen") retryChat();
+    else setChatEdit(true);
+  });
+  $("#chatEditCancel").addEventListener("click", () => { setChatEdit(false); $("#chatInput").value = ""; });
+  // Up arrow in an empty chat box edits the last question (as in chat apps).
+  $("#chatInput").addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp" && !e.target.value && !state.chat?.busy && state.chat?.messages.some((m) => m.role === "user")) { e.preventDefault(); setChatEdit(true); }
+    if (e.key === "Escape" && state.chatEdit) { e.stopPropagation(); setChatEdit(false); e.target.value = ""; }
+  });
+  ["#dChapters", "#dQuiz"].forEach((sel) => $(sel).addEventListener("click", (e) => {
+    const act = e.target.closest("[data-act]");
+    if (act) return onAction(act.dataset.act, act);
+    const study = e.target.closest("[data-study]");
+    if (study) return generateStudy(study.dataset.study, study.dataset.count ? { count: +study.dataset.count } : {});
+    const seek = e.target.closest("[data-seek], .ts");
+    if (seek) return seekTo(parseFloat(seek.dataset.seek ?? seek.dataset.ts));
+    const q = e.target.closest("[data-quiz]");
+    if (q?.dataset.quiz === "check") return checkQuiz();
+    if (q?.dataset.quiz === "retake") { state.quizPick = {}; state.quizResult = null; $("#dQuiz").dataset.key = ""; renderQuiz(state.detail); }
+  }));
+  $("#dQuiz").addEventListener("change", (e) => {
+    const m = e.target.name?.match(/^quiz(\d+)$/);
+    if (m) { state.quizPick[+m[1]] = +e.target.value; updateQuizHint(); }
+  });
+  $("#dTags").addEventListener("click", (e) => {
+    const rm = e.target.closest("[data-tag-rm]");
+    if (rm && state.detail) saveTags((state.detail.tags || []).filter((tag) => tag !== rm.dataset.tagRm));
+  });
+  $("#dTags").addEventListener("keydown", (e) => {
+    if (e.target.id !== "tagInput" || e.isComposing) return;
+    const value = e.target.value.trim();
+    if ((e.key === "Enter" || e.key === ",") && value) { e.preventDefault(); saveTags([...(state.detail?.tags || []), value]); }
+    else if (e.key === "Backspace" && !e.target.value && state.detail?.tags?.length) saveTags(state.detail.tags.slice(0, -1));
+  });
+  $("#tagFilter").addEventListener("click", (e) => {
+    const c = e.target.closest("[data-tag]");
+    if (c) { state.tagFilter = state.tagFilter === c.dataset.tag ? null : c.dataset.tag; renderJobs(); }
+  });
+  $("#searchResults").addEventListener("click", (e) => {
+    const hit = e.target.closest(".search-hit");
+    if (hit) openHit(hit.dataset.job, parseFloat(hit.dataset.start));
+  });
+  $("#emptyAiBtn").addEventListener("click", openSettings);
+  // Cmd/Ctrl+Enter starts the transcription from any field of the form.
+  $("#createForm").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && !e.isComposing) { e.preventDefault(); $("#createForm").requestSubmit(); }
   });
   $("#chatForm").addEventListener("submit", (e) => { e.preventDefault(); sendChat($("#chatInput").value); });
   $("#chatInput").addEventListener("keydown", (e) => {

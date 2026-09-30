@@ -147,6 +147,7 @@
 
           <div class="form-footer">
             <button type="submit" class="btn btn--primary" id="submitBtn" data-i18n="create.submit">Start transcription</button>
+            <span class="form-footer__estimate" id="estimate" aria-live="polite"></span>
           </div>
         </form>
       </section>
@@ -160,12 +161,14 @@
             <input id="historySearch" type="search" data-i18n-placeholder="history.search" data-i18n-title="history.searchHint">
           </div>
         </div>
+        <div class="search-results" id="searchResults" hidden></div>
         <div class="chips" id="statusFilter" role="group" data-i18n-aria="filter.label">
           <button type="button" class="chip" data-filter="all" aria-pressed="true"><span data-i18n="filter.all">All</span><span class="chip__count"></span></button>
           <button type="button" class="chip" data-filter="active" aria-pressed="false"><span data-i18n="filter.active">In progress</span><span class="chip__count"></span></button>
           <button type="button" class="chip" data-filter="done" aria-pressed="false"><span data-i18n="filter.done">Done</span><span class="chip__count"></span></button>
           <button type="button" class="chip" data-filter="failed" aria-pressed="false"><span data-i18n="filter.failed">Failed / cancelled</span><span class="chip__count"></span></button>
         </div>
+        <div class="chips chips--tags" id="tagFilter" role="group" data-i18n-aria="filter.tags" hidden></div>
         <div class="table-wrap">
           <table class="table">
             <thead>
@@ -182,6 +185,15 @@
             <svg viewBox="0 0 24 24" width="40" height="40"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
             <h3 data-i18n="history.emptyTitle">No transcripts yet</h3>
             <p data-i18n="history.emptyDesc">Upload your first lecture recording to get started.</p>
+            <ol class="steps">
+              <li><b data-i18n="onboard.s1">Add a recording</b><span data-i18n="onboard.s1d"></span></li>
+              <li><b data-i18n="onboard.s2">Pick a model</b><span data-i18n="onboard.s2d"></span></li>
+              <li><b data-i18n="onboard.s3">Study with AI</b><span data-i18n="onboard.s3d"></span></li>
+            </ol>
+            <div class="section-msg section-msg--info empty__ai" id="emptyAi" hidden>
+              <span data-i18n="onboard.ai">Recap, chat, chapters and quizzes need an AI provider.</span>
+              <button type="button" class="btn btn--link btn--compact" id="emptyAiBtn" data-i18n="onboard.aiBtn">Set up AI</button>
+            </div>
           </div>
           <div id="noMatch" class="empty empty--compact" hidden>
             <p data-i18n="history.noMatch">No transcripts match this filter.</p>
@@ -198,6 +210,7 @@
       <div class="drawer__heading">
         <div class="drawer__meta" id="dMeta"></div>
         <h2 id="dTitle"></h2>
+        <div class="tags" id="dTags"></div>
       </div>
       <button class="btn btn--subtle btn--icon" id="closeDrawer" data-i18n-aria="drawer.close">
         <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -208,7 +221,7 @@
 
     <div class="drawer__body">
       <div id="dProgress" class="progress-block" hidden>
-        <div class="progress-block__row"><span id="dStage"></span><span id="dPct"></span></div>
+        <div class="progress-block__row"><span id="dStage" role="status"></span><span id="dPct"></span></div>
         <div class="progress"><div class="progress__bar" id="dBar"></div></div>
       </div>
 
@@ -218,6 +231,8 @@
       </div>
 
       <div id="dPlayer" class="player"></div>
+
+      <section id="dChapters" class="recap chapters" hidden></section>
 
       <section id="dRecap" class="recap" hidden>
         <div class="recap__head">
@@ -234,7 +249,8 @@
             <span data-i18n="chat.title">Ask about this recording</span></h3>
           <div class="recap__actions"><button type="button" class="btn btn--subtle btn--compact" id="chatClear" data-i18n="chat.clear" hidden>Clear chat</button><span id="chatLang"></span></div>
         </div>
-        <ol class="chat__list" id="dChatList" aria-live="polite"></ol>
+        <ol class="chat__list" id="dChatList" aria-live="polite" aria-busy="false"></ol>
+        <div class="chat__edit" id="chatEdit" hidden><span data-i18n="chat.editing">Editing your last question</span> <button type="button" class="btn btn--link btn--compact" id="chatEditCancel" data-i18n="chat.editCancel">Cancel</button></div>
         <form class="chat__form" id="chatForm">
           <textarea id="chatInput" class="textfield chat__input" rows="2" maxlength="4000" data-i18n-placeholder="chat.placeholder"></textarea>
           <button type="submit" class="btn btn--primary" id="chatSend" data-i18n="chat.send">Send</button>
@@ -242,6 +258,8 @@
         </form>
         <p class="field__help" id="chatHelp"></p>
       </section>
+
+      <section id="dQuiz" class="recap quiz" hidden></section>
 
       <div class="transcript-head">
         <h3><span data-i18n="drawer.transcript">Transcript</span> <span class="badge" id="dCount">0</span></h3>
@@ -281,7 +299,7 @@
     </div>
   </aside>
 
-  <div class="flags" id="flags"></div>
+  <div class="flags" id="flags" role="status" aria-live="polite"></div>
   <script src="/static/app.js"></script>
 </body>
 </html>
