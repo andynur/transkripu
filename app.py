@@ -1700,6 +1700,11 @@ def index():
     return send_from_directory(STATIC_DIR, "index.html")
 
 
+@app.get("/favicon.ico")
+def favicon():
+    return send_from_directory(STATIC_DIR, "favicon.ico", mimetype="image/vnd.microsoft.icon")
+
+
 @app.get("/static/<path:name>")
 def static_files(name):
     return send_from_directory(STATIC_DIR, name)

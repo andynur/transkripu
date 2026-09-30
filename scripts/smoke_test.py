@@ -162,6 +162,8 @@ def main() -> int:
             check(False, "server starts", f"see {log.name}")
             return summary()
         check(health["tools"]["mlx_whisper"] and health["tools"]["yt_dlp"], "health: stub tools detected", str(health["tools"]))
+        with urllib.request.urlopen(base + "/favicon.ico", timeout=5) as r:
+            check(r.status == 200 and r.read(4) == b"\0\0\1\0", "favicon.ico served")
 
         # Upload flow
         s, job = request(base, "POST", "/api/jobs", {"language": "id", "prompt": "test"}, ("lecture.mp4", b"\0" * 2048))
