@@ -1,20 +1,47 @@
+<div align="center">
+
 # Transkripu
 
-A local web app that turns lecture videos and audio into transcripts and subtitles, running entirely on your Apple Silicon Mac with [mlx-whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper).
+**Local, private transcription for lectures, talks and videos on Apple Silicon.**
 
-- **Inputs:** local files (MP4, MOV, MKV, MP3, M4A, WAV, …) or a YouTube/web URL via [yt-dlp](https://github.com/yt-dlp/yt-dlp)
-- **Outputs:** SRT, VTT, TXT, TSV, JSON
-- **UI:** live progress with streaming text, media player synced to the transcript (click a line to seek), search, copy, and Reveal in Finder
-- **Extras:** EN/ID interface, light/dark theme (light by default), per-stage timings
-- **Privacy:** nothing leaves your machine except the one-time model download and URL downloads
+Drop in a file or paste a YouTube link and get SRT, VTT, TXT, TSV and JSON transcripts.
+Transcription runs on your Mac's GPU with [mlx-whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper).
 
-UI styling follows the Atlassian Design System (Jira).
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Platform: macOS Apple Silicon](https://img.shields.io/badge/platform-macOS%20%7C%20Apple%20Silicon-lightgrey)
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB)
+![Flask](https://img.shields.io/badge/backend-Flask-000000)
+![No build step](https://img.shields.io/badge/frontend-vanilla%20JS-F7DF1E)
+
+[Features](#features) · [Quick start](#quick-start) · [Usage](#usage) · [Configuration](#configuration) · [API](#http-api) · [Development](#development) · [Contributing](#contributing)
+
+</div>
 
 ---
 
+## Features
+
+- **Local and private.** Media and transcripts stay on your machine. Only the one-time model download and URL downloads use the network.
+- **Any source.** Upload MP4, MOV, MKV, MP3, M4A, WAV and more, or paste a YouTube/web URL (via [yt-dlp](https://github.com/yt-dlp/yt-dlp)).
+- **Uses existing subtitles.** When a video already has subtitles in the spoken language, Transkripu uses them and skips Whisper.
+- **Fast after the first job.** A long-lived worker keeps the Whisper model loaded between jobs.
+- **Live progress.** Text streams in while it is transcribed, with per-stage timings and an ETA.
+- **Transcript player.** Media player synced to the transcript: click a line to seek, search, copy, and fix a segment in place.
+- **AI recap and chat (optional).** Generate study notes from a transcript and ask questions about it with Gemini, Groq, SumoPod, Ollama, LM Studio, or the `claude` / `codex` CLI.
+- **Many formats.** Download SRT, VTT, TXT, TSV, JSON, and the recap as Markdown.
+- **Polished UI.** English and Indonesian interface, light and dark theme, styled after the Atlassian Design System.
+- **Small stack.** Flask plus vanilla HTML/CSS/JS. No build step, no Node, no database server.
+
+## Requirements
+
+- macOS on Apple Silicon (M1 or later). `mlx-whisper` does not run on Intel Macs, Linux or Windows.
+- Python 3.10 or later (the launcher avoids macOS's bundled Python 3.9)
+- [Homebrew](https://brew.sh)
+- About 1.6 GB of free disk space for the default model
+
 ## Quick start
 
-### 1. Install prerequisites (once)
+### 1. Install the prerequisites
 
 ```bash
 brew install python ffmpeg yt-dlp deno pipx
@@ -24,63 +51,114 @@ pipx install mlx-whisper
 
 | Tool | Why |
 |---|---|
-| `python` (3.10+) | Runs the Flask server. The launcher avoids macOS's bundled Python 3.9. |
-| `ffmpeg` / `ffprobe` | Decodes media for Whisper; reads duration for progress. |
+| `python` (3.10+) | Runs the Flask server. |
+| `ffmpeg` / `ffprobe` | Decodes media for Whisper and reads the duration for progress. |
 | `mlx-whisper` | Whisper on the Apple GPU via MLX. |
-| `yt-dlp` + `deno` | Downloads audio from URLs. Deno is required by recent yt-dlp for YouTube. Optional if you only use local files. |
-| An LLM provider | Optional. Writes the **AI recap** (study notes) and answers **chat** questions about a finished transcript. Pick one under ⚙ **AI settings**: a Gemini/Groq/SumoPod API key, a local Ollama/LM Studio, or the `claude` / `codex` CLI with your own login. See [Choosing a provider](#choosing-a-provider). |
+| `yt-dlp` + `deno` | Downloads audio from URLs. Recent yt-dlp needs Deno for YouTube. Optional if you only use local files. |
+| An LLM provider | Optional. Needed only for the AI recap and chat. See [AI providers](#ai-providers). |
 
-### 2. Run
+### 2. Clone and run
 
 ```bash
+git clone https://github.com/andynur/transkripu.git
+cd transkripu
 ./start.command
 ```
 
-Or double-click `start.command` in Finder (the first time, right-click → **Open** to get past Gatekeeper). The launcher creates `.venv/`, installs Flask, starts the server and opens **http://127.0.0.1:8765**.
+The launcher creates `.venv/`, installs Flask, starts the server and opens **http://127.0.0.1:8765**.
 
-The first transcription downloads the selected model into `~/.cache/huggingface` (about 1.6 GB for Large v3 Turbo). After that everything works offline.
+The first transcription downloads the selected model into `~/.cache/huggingface` (about 1.6 GB for Large v3 Turbo). After that, transcription works offline.
 
-Stop the server with **Ctrl+C**, by closing the Terminal window, or by double-clicking `stop.command`.
+> [!TIP]
+> You can also double-click `start.command` in Finder. The first time, right-click it and choose **Open** to get past Gatekeeper.
 
-If Transkripu from this folder is already running, `start.command` just opens the browser. If another program (or an old copy of Transkripu in a different folder) holds the port, it shows that program's pid and folder and stops.
+### 3. Stop
 
-**Optional: a Dock app.** Open Automator → New → Application → add **Run Shell Script** with `open -a Terminal "/path/to/transkripu/start.command"`, then save it as `Transkripu.app` outside the repo and drag it to the Dock.
+Press **Ctrl+C**, close the Terminal window, or run `./stop.command`.
 
----
+If Transkripu from this folder is already running, `start.command` only opens the browser. If another program holds the port, the launcher shows that program's PID and folder, then exits.
 
-## Project layout
+<details>
+<summary><strong>Optional: add Transkripu to the Dock</strong></summary>
 
+1. Open Automator and choose **New → Application**.
+2. Add a **Run Shell Script** action with:
+   ```bash
+   open -a Terminal "/path/to/transkripu/start.command"
+   ```
+3. Save it as `Transkripu.app` outside the repository and drag it to the Dock.
+
+</details>
+
+## Usage
+
+1. Choose a file, or paste one or more URLs.
+2. Pick a model and the spoken language (`English`, `Indonesian` or `Auto-detect`).
+3. Optional: add **Vocabulary hints** (names, technical terms) to improve spelling.
+4. Optional: for sites that need a login, choose a browser under **Use browser sign-in**. Transkripu then uses that browser's cookies.
+5. Click **Start transcription**. Jobs run one at a time, in queue order.
+6. Open a finished job to play the media, read and edit the transcript, download files, or create an AI recap.
+
+### Models
+
+| Model | Notes |
+|---|---|
+| `mlx-community/whisper-large-v3-turbo` | Default. Best balance of speed and accuracy. |
+| `mlx-community/whisper-large-v3-mlx` | Most accurate, slower. |
+| `mlx-community/whisper-medium-mlx` | Faster, less accurate. |
+| `mlx-community/whisper-small-mlx` | Fastest, for quick drafts. |
+
+### Command line
+
+The API also works from scripts:
+
+```bash
+curl -F url="https://youtu.be/VIDEO_ID" -F language=id -F prompt="Data Structures, Dijkstra" \
+     http://127.0.0.1:8765/api/jobs
 ```
-transkripu/
-├── app.py              # Flask server, job queue, yt-dlp / mlx_whisper integration
-├── whisper_worker.py   # long-lived mlx_whisper process (keeps the model loaded between jobs)
-├── requirements.txt    # Python deps for the server (Flask only)
-├── start.command       # macOS launcher: venv + deps + run (reuses a running instance)
-├── stop.command        # stops the server on the configured port
-├── static/
-│   ├── index.html      # markup; text comes from data-i18n keys
-│   ├── app.css         # design tokens (light + [data-theme="dark"]) and components
-│   └── app.js          # UI logic, i18n dictionary, polling
-├── scripts/
-│   ├── smoke_test.py   # end-to-end API test with stubbed tools (no GPU needed)
-│   └── stubs/          # fake mlx_whisper / yt-dlp (CLI + pylib/ package) used by the smoke test
-├── AGENTS.md           # guide for AI coding agents (commands, code map, rules)
-├── CLAUDE.md           # imports AGENTS.md for Claude Code
-├── .claude/commands/   # /feature, /fix, /review, /handoff for Claude Code
-├── docs/ai/
-│   ├── MASTER_PROMPT.md  # copy-paste prompts for any agent
-│   └── NOTES.md          # one-line decisions & gotchas log
-└── data/               # created at runtime (git-ignore this)
-    ├── transkripu.db     # SQLite: chat history (table chat_messages, keyed by job id)
-    └── jobs/<job_id>/
-        ├── job.json          # job state (source of truth, reloaded on start)
-        ├── source.<ext>      # uploaded or downloaded media
-        ├── source.info.json  # yt-dlp metadata (URL jobs)
-        ├── log.txt           # full stdout/stderr of every tool invocation
-        ├── segments.json     # [{start, end, text}] used by the UI
-        ├── recap.md          # AI recap (optional)
-        └── transcript.{srt,vtt,txt,tsv,json}
+
+See [HTTP API](#http-api) for all endpoints.
+
+## Configuration
+
+Set environment variables before you run `./start.command`.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `TRANSKRIPU_PORT` | `8765` | HTTP port |
+| `TRANSKRIPU_HOST` | `127.0.0.1` | Bind address. Keep it local: the API has no authentication. With a non-loopback address the `Host` check is off and anyone on the network can use the app. |
+| `TRANSKRIPU_DATA_DIR` | `./data` | Where job folders are stored |
+| `TRANSKRIPU_NO_BROWSER` | unset | Set to any value to skip opening the browser |
+| `HF_ENDPOINT` | unset | Hugging Face mirror, e.g. `https://hf-mirror.com` if huggingface.co is blocked |
+| `TRANSKRIPU_WHISPER_WORKER` | `1` | `0` runs the `mlx_whisper` CLI for every job instead of keeping the model loaded in `whisper_worker.py` |
+| `TRANSKRIPU_WHISPER_PYTHON` | auto | Python that runs `whisper_worker.py` (must import `mlx_whisper`); default: the one behind the `mlx_whisper` command |
+| `TRANSKRIPU_PATH_PREPEND` | unset | Directories searched first for tools (used by tests to inject stubs) |
+| `TRANSKRIPU_CLAUDE` | auto | Path to the `claude` binary if it is not on `PATH` (nvm and `~/.claude/local` are also searched) |
+| `TRANSKRIPU_CODEX` | auto | Path to the `codex` binary if it is not on `PATH` (nvm is also searched) |
+| `GEMINI_API_KEY` | unset | Gemini API key; overrides the key saved in AI settings |
+| `GROQ_API_KEY` | unset | Groq API key; overrides the saved key |
+| `SUMOPOD_API_KEY` | unset | SumoPod API key; overrides the saved key |
+| `OPENAI_COMPAT_API_KEY` | unset | Key for the "Custom (OpenAI-compatible)" provider; overrides the saved key |
+
+Example:
+
+```bash
+TRANSKRIPU_PORT=9000 HF_ENDPOINT=https://hf-mirror.com ./start.command
 ```
+
+### AI providers
+
+The AI recap and chat are optional. Configure them in the app under ⚙ **AI settings**. Settings (base URLs, models, routing, keys) are stored in `data/config.json` with permissions `0600`. The API never returns a key, and keys are never written to logs.
+
+| Provider | Cost | Notes |
+|---|---|---|
+| Google Gemini (default) | Free tier | Large context: a 1-hour lecture fits in one request. Free-tier data may be used by Google. Key: [aistudio.google.com](https://aistudio.google.com/apikey). |
+| Groq | Free tier | Very fast, but ~8K tokens/minute, so `max_input_tokens` is 6000 and long recaps run in parts (map → reduce), pausing on 429. |
+| SumoPod | Paid (IDR / QRIS) | Copy the base URL and key from the SumoPod dashboard. |
+| Ollama / LM Studio | Free, offline | Runs on this Mac; no key. Start the server first. |
+| Claude Code CLI / Codex CLI | Your existing subscription | Uses the `claude` / `codex` login. Runs headless and read-only in an empty temp folder. |
+
+Default routing: recap and chat go to Gemini. Without a Gemini key, or on a rate limit or outage, they fall back to the Claude Code CLI. Model IDs change often, so use **Load models** to pick from what the provider offers.
 
 ## How it works
 
@@ -109,6 +187,40 @@ Browser polls /api/jobs every 1.2 s while something is running (5 s when idle,
 - **Cancel** sends `SIGTERM` to the subprocess's process group, which also stops `ffmpeg` children.
 - **Restart safety.** Jobs that were running when the server stopped are marked `error` with `error_code: "interrupted"` and can be retried.
 
+### Project layout
+
+```
+transkripu/
+├── app.py              # Flask server, job queue, yt-dlp / mlx_whisper integration, LLM providers
+├── whisper_worker.py   # long-lived mlx_whisper process (keeps the model loaded between jobs)
+├── requirements.txt    # Python deps for the server (Flask only)
+├── start.command       # macOS launcher: venv + deps + run (reuses a running instance)
+├── stop.command        # stops the server on the configured port
+├── static/
+│   ├── index.html      # markup; text comes from data-i18n keys
+│   ├── app.css         # design tokens (light + [data-theme="dark"]) and components
+│   └── app.js          # UI logic, i18n dictionary, polling
+├── scripts/
+│   ├── smoke_test.py   # end-to-end API test with stubbed tools (no GPU needed)
+│   └── stubs/          # fake mlx_whisper / yt-dlp / LLM CLIs used by the smoke test
+├── AGENTS.md           # guide for AI coding agents (commands, code map, rules)
+├── CLAUDE.md           # imports AGENTS.md for Claude Code
+├── .claude/commands/   # /feature, /fix, /review, /handoff for Claude Code
+├── docs/ai/            # agent prompts and a decisions & gotchas log (NOTES.md)
+└── data/               # created at runtime, git-ignored
+    ├── config.json       # AI provider settings (0600)
+    ├── transkripu.db     # SQLite: chat history (table chat_messages, keyed by job id)
+    ├── server.log        # server events and tracebacks
+    └── jobs/<job_id>/
+        ├── job.json          # job state (source of truth, reloaded on start)
+        ├── source.<ext>      # uploaded or downloaded media
+        ├── source.info.json  # yt-dlp metadata (URL jobs)
+        ├── log.txt           # full stdout/stderr of every tool invocation
+        ├── segments.json     # [{start, end, text}] used by the UI
+        ├── recap.md          # AI recap (optional)
+        └── transcript.{srt,vtt,txt,tsv,json}
+```
+
 ### Job model
 
 `status`: `queued` → `downloading` (URL only) → `transcribing` → `done` | `error` | `cancelled`
@@ -129,6 +241,9 @@ All endpoints are served on `127.0.0.1` only. The API has no authentication, so 
 - `Sec-Fetch-Site: cross-site`, or a non-GET request whose `Origin` differs from the app's own (blocks cross-site form posts).
 
 Clients that send neither header, such as `curl` or scripts, are allowed.
+
+<details>
+<summary><strong>Endpoint reference</strong></summary>
 
 | Method | Path | Description |
 |---|---|---|
@@ -154,61 +269,15 @@ Clients that send neither header, such as `curl` or scripts, are allowed.
 | `GET` | `/api/jobs/:id/download/:fmt` | `srt`, `vtt`, `txt`, `tsv`, `json`, or `md` (the AI recap) as an attachment. |
 | `POST` | `/api/jobs/:id/reveal` | Reveal the output in Finder (macOS). |
 
-LLM error codes (recap, chat, test): `llm_no_key`, `llm_no_url`, `llm_auth` (401/403, or Gemini's 400 for a bad key), `llm_rate_limited` (429), `llm_context_too_long`, `llm_model_not_found` (404), `llm_server_error` (5xx), `llm_unreachable`, `llm_timeout`, `llm_bad_response`, `llm_cli_missing`, `llm_cli_failed`. After `llm_no_key`, `llm_no_url`, `llm_cli_missing`, `llm_rate_limited`, `llm_server_error`, `llm_unreachable` or `llm_timeout` the route's fallback provider is tried.
+</details>
+
+### Errors
 
 Validation errors return `{ "error_code": "...", "error": "..." }` with a 4xx status: `missing_input`, `invalid_url`, `unknown_model`, `unknown_language`, `unknown_browser`, `unsupported_file`, `job_running` (409), `forbidden` (403), `disk_full` (507).
 
+LLM error codes (recap, chat, test): `llm_no_key`, `llm_no_url`, `llm_auth` (401/403, or Gemini's 400 for a bad key), `llm_rate_limited` (429), `llm_context_too_long`, `llm_model_not_found` (404), `llm_server_error` (5xx), `llm_unreachable`, `llm_timeout`, `llm_bad_response`, `llm_cli_missing`, `llm_cli_failed`. After `llm_no_key`, `llm_no_url`, `llm_cli_missing`, `llm_rate_limited`, `llm_server_error`, `llm_unreachable` or `llm_timeout` the route's fallback provider is tried.
+
 Server events and unexpected errors (with tracebacks) are logged to the terminal and to `data/server.log`.
-
-Example from the command line:
-
-```bash
-curl -F url="https://youtu.be/VIDEO_ID" -F language=id -F prompt="Data Structures, Dijkstra" \
-     http://127.0.0.1:8765/api/jobs
-```
-
-## Configuration
-
-Environment variables (set them before `./start.command`):
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `TRANSKRIPU_PORT` | `8765` | HTTP port |
-| `TRANSKRIPU_HOST` | `127.0.0.1` | Bind address. Keep it local: the API has no authentication. With a non-loopback address the `Host` check is off and anyone on the network can use the app. |
-| `TRANSKRIPU_DATA_DIR` | `./data` | Where job folders are stored |
-| `TRANSKRIPU_NO_BROWSER` | unset | Set to any value to skip opening the browser |
-| `HF_ENDPOINT` | unset | Hugging Face mirror, e.g. `https://hf-mirror.com` if huggingface.co is blocked |
-| `TRANSKRIPU_WHISPER_WORKER` | `1` | `0` runs the `mlx_whisper` CLI for every job instead of keeping the model loaded in `whisper_worker.py` |
-| `TRANSKRIPU_WHISPER_PYTHON` | auto | Python that runs `whisper_worker.py` (must import `mlx_whisper`); default: the one behind the `mlx_whisper` command |
-| `TRANSKRIPU_PATH_PREPEND` | unset | Directories searched first for tools (used by tests to inject stubs) |
-| `TRANSKRIPU_CLAUDE` | auto | Path to the `claude` binary if it is not on `PATH` (nvm and `~/.claude/local` are also searched) |
-| `TRANSKRIPU_CODEX` | auto | Path to the `codex` binary if it is not on `PATH` (nvm is also searched) |
-| `GEMINI_API_KEY` | unset | Gemini API key; overrides the key saved in AI settings |
-| `GROQ_API_KEY` | unset | Groq API key; overrides the saved key |
-| `SUMOPOD_API_KEY` | unset | SumoPod API key; overrides the saved key |
-| `OPENAI_COMPAT_API_KEY` | unset | Key for the "Custom (OpenAI-compatible)" provider; overrides the saved key |
-
-Provider settings (base URLs, models, routing, keys) are edited in the app under ⚙ **AI settings** and stored in `data/config.json` with permissions `0600`. The API never returns a key, and keys are never written to logs.
-
-### Choosing a provider
-
-| Provider | Cost | Notes |
-|---|---|---|
-| Google Gemini (default) | Free tier | Large context: a 1-hour lecture fits in one request. Free-tier data may be used by Google. Key: [aistudio.google.com](https://aistudio.google.com/apikey). |
-| Groq | Free tier | Very fast, but ~8K tokens/minute, so `max_input_tokens` is 6000 and long recaps run in parts (map → reduce), pausing on 429. |
-| SumoPod | Paid (IDR / QRIS) | Copy the base URL and key from the SumoPod dashboard. |
-| Ollama / LM Studio | Free, offline | Runs on this Mac; no key. Start the server first. |
-| Claude Code CLI / Codex CLI | Your existing subscription | Uses the `claude` / `codex` login. Runs headless and read-only in an empty temp folder. |
-
-Default routing: recap and chat go to Gemini; without a Gemini key (or on a rate limit/outage) they fall back to the Claude Code CLI. Model IDs change often: use **Load models** to pick from what the provider offers.
-
-## Customising
-
-- **Add a model:** append the Hugging Face repo ID to `MODELS` in `app.py`, then add a label and hint under `MODEL_KEYS` and `model.<key>` / `model.<key>.hint` in `static/app.js`.
-- **Add a spoken language:** append its Whisper code (e.g. `"ja"`) to `LANGUAGES` in `app.py`, and add `lang.ja` to both dictionaries in `static/app.js`.
-- **Add a UI language:** add a new dictionary to `I18N` in `static/app.js` and a button to `#langSwitch` in `index.html`. Missing keys fall back to English.
-- **Change mlx_whisper options:** edit the `cmd` list in `step_transcribe()`. Run `mlx_whisper --help` for the full list (e.g. `--word-timestamps True`, `--max-line-width`).
-- **Theme tokens:** colors are CSS custom properties on `:root` (light) and `:root[data-theme="dark"]` in `static/app.css`.
 
 ## Development
 
@@ -217,27 +286,45 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 TRANSKRIPU_NO_BROWSER=1 .venv/bin/python app.py
 ```
 
-The frontend is plain HTML/CSS/JS with no build step, so reload the page after editing. Restart the server after editing `app.py`.
+The frontend is plain HTML/CSS/JS with no build step, so reload the page after you edit it. Restart the server after you edit `app.py`.
 
 ### Tests
 
 ```bash
 python3 scripts/smoke_test.py   # → PASS n/n (switches to .venv/bin/python if Flask is missing)
+node --check static/app.js      # optional JS syntax check, if Node is installed
 ```
 
-Starts the server on a random port with a temp data dir and the stubs in `scripts/stubs/`, then checks upload, URL, validation, retry and delete flows plus EN/ID i18n key parity. It needs only Flask, so it runs anywhere, including CI. Add a check whenever you add an endpoint, stage or error code.
+The smoke test starts the server on a random port with a temporary data directory and the stubs in `scripts/stubs/`. It then checks the upload, URL, validation, retry, delete, settings, recap and chat flows, plus EN/ID i18n key parity. It needs only Flask, not a GPU or network, so it runs anywhere, including CI.
+
+### Customising
+
+- **Add a model:** append the Hugging Face repo ID to `MODELS` in `app.py`, then add a label and hint under `MODEL_KEYS` and `model.<key>` / `model.<key>.hint` in `static/app.js`.
+- **Add a spoken language:** append its Whisper code (e.g. `"ja"`) to `LANGUAGES` in `app.py`, and add `lang.ja` to both dictionaries in `static/app.js`.
+- **Add a UI language:** add a new dictionary to `I18N` in `static/app.js` and a button to `#langSwitch` in `index.html`. Missing keys fall back to English.
+- **Change mlx_whisper options:** edit the `cmd` list in `step_transcribe()`. Run `mlx_whisper --help` for the full list (e.g. `--word-timestamps True`, `--max-line-width`).
+- **Theme tokens:** colors are CSS custom properties on `:root` (light) and `:root[data-theme="dark"]` in `static/app.css`.
 
 ### Working with AI agents
 
-`AGENTS.md` is the entry point for coding agents: commands, a code map with grep anchors, invariants and a token-lean workflow. Ready-made prompts live in `docs/ai/MASTER_PROMPT.md`. In Claude Code, use `/feature`, `/fix`, `/review` and `/handoff`.
+[`AGENTS.md`](AGENTS.md) is the entry point for coding agents: commands, a code map with grep anchors, invariants and a token-lean workflow. Ready-made prompts are in [`docs/ai/MASTER_PROMPT.md`](docs/ai/MASTER_PROMPT.md). In Claude Code, use `/feature`, `/fix`, `/review` and `/handoff`.
 
-Recommended `.gitignore`:
+## Contributing
 
-```
-.venv/
-data/
-__pycache__/
-```
+Contributions are welcome: bug reports, fixes, new UI languages and docs.
+
+1. Fork the repository and create a branch: `git checkout -b feat/my-change`.
+2. Make a small, focused change. Follow the rules in [`AGENTS.md`](AGENTS.md#invariants-do-not-break). The most important rules are:
+   - The backend sends codes and the UI owns the text. Add every new string to **both** `I18N.en` and `I18N.id`.
+   - External tools (`yt-dlp`, `mlx_whisper`, `ffprobe`) run as subprocesses, never as imports.
+   - Do not add dependencies or build tooling without discussing it in an issue first.
+   - Use CSS tokens only, and check the UI in light and dark themes.
+   - If you change the API or add an environment variable, update this README.
+3. Run `python3 scripts/smoke_test.py` and make sure it prints `PASS n/n`. Add a check when you add an endpoint, stage or error code.
+4. Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `perf:`, `test:`).
+5. Open a pull request. Describe what changed, and how you tested it on a Mac if the change touches transcription or the UI.
+
+When you report a bug, include your macOS version, chip, the `mlx-whisper` and `yt-dlp` versions, and the relevant part of `data/jobs/<id>/log.txt`.
 
 ## Troubleshooting
 
@@ -252,7 +339,22 @@ __pycache__/
 | UI changes don't show up / page looks old | Another copy is holding the port. Run `./stop.command`, then `./start.command`, then hard-reload (Cmd+Shift+R). |
 | Anything else | Check `data/jobs/<id>/log.txt` for the exact commands and tool output. |
 
+## Security
+
+Transkripu is a single-user local app. The API has **no authentication** and binds to `127.0.0.1` by default. Do not expose it to a network or the internet. Host and origin checks block DNS rebinding and cross-site requests from other websites.
+
+To report a security problem, please contact the maintainer privately through GitHub instead of opening a public issue.
+
+## Acknowledgements
+
+- [mlx-whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper) and [MLX](https://github.com/ml-explore/mlx) by Apple
+- [OpenAI Whisper](https://github.com/openai/whisper)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [FFmpeg](https://ffmpeg.org)
+- [Flask](https://flask.palletsprojects.com)
+- [Atlassian Design System](https://atlassian.design) for the visual style
+
 ## License
 
-Personal use. Respect the copyright and terms of the platforms and the lecture materials you process.
-# transkripu
+Released under the [MIT License](LICENSE).
+
+You are responsible for how you use this software. Respect the copyright and terms of service of the platforms and materials you download and transcribe.
