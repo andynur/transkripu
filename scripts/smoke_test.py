@@ -20,6 +20,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.parse
 import urllib.error
 import urllib.request
 import uuid
@@ -352,6 +353,21 @@ def main() -> int:
         check([m["role"] for m in msgs] == ["user", "assistant"] and "[00:04]" in msgs[-1]["text"]
               and "earlier turns: 0" in msgs[-1]["text"], "chat: answer stored with timestamp", str(msgs)[:200])
         check("in English" in msgs[-1]["text"] if msgs else False, "chat: default language = detected language (en)")
+        sugg = msgs[-1]["meta"].get("suggestions") if msgs else None
+        check(sugg == [f"Follow-up {n} in English?" for n in range(1, 6)] and "@@" not in msgs[-1]["text"],
+              "chat: 5 follow-up questions split from the answer", f"{sugg} {msgs[-1:]}")
+        request(base, "POST", chat_url, json_body={"text": "STUB_NOFOLLOW"})
+        msgs = wait_chat(base, cid).get("messages", [])
+        check(len(msgs[-1]["meta"].get("suggestions") or []) == 5, "chat: follow-ups asked separately when missing",
+              str(msgs[-1:]))
+        request(base, "DELETE", chat_url)
+        request(base, "POST", chat_url, json_body={"text": "Apa intinya?"})
+        wait_chat(base, cid)
+        s, st = request(base, "POST", f"{chat_url}/suggestions", json_body={"lang": "id"})
+        check(s == 200 and st.get("suggestions") == [f"Starter {n} in Indonesian?" for n in range(1, 6)],
+              "chat: 5 starter questions in the chosen language (deduped)", f"{s} {st}")
+        s, body = request(base, "POST", f"{chat_url}/suggestions", json_body={"lang": "fr"})
+        check(s == 400 and body.get("error_code") == "unknown_language", "chat: starters reject unknown language")
         s, body = request(base, "POST", chat_url, json_body={"text": "x", "lang": "fr"})
         check(s == 400 and body.get("error_code") == "unknown_language", "chat: unknown language rejected")
         request(base, "POST", chat_url, json_body={"text": "Lalu?", "lang": "id"})
@@ -392,6 +408,50 @@ def main() -> int:
         last = (chat.get("messages") or [{}])[-1]
         check(s == 200 and not chat.get("busy") and last.get("role") == "assistant" and last["meta"].get("stopped")
               and last["text"].startswith("Answer to"), "chat: stop keeps the partial answer", str(chat)[:200])
+        # Regenerate / edit the last question
+        s, body = request(base, "POST", f"{chat_url}/retry", json_body={"text": "Reworded?"})
+        chat = wait_chat(base, cid)
+        msgs = chat.get("messages", [])
+        check(s == 202 and len(msgs) == 2 and msgs[0]["text"] == "Reworded?" and "Answer to: Reworded?" in msgs[1]["text"],
+              "chat: retry rewords the last question and replaces its answer", f"{s} {str(msgs)[:200]}")
+        request(base, "POST", f"{chat_url}/retry")
+        msgs = wait_chat(base, cid).get("messages", [])
+        check(len(msgs) == 2 and msgs[1]["id"] > msgs[0]["id"] and "Reworded?" in msgs[1]["text"],
+              "chat: retry without text answers the same question again", str(msgs)[:200])
+
+        # Chapters and quiz (recap route, stub claude)
+        s, body = request(base, "POST", f"/api/jobs/{cid}/chapters", json_body={"lang": "id"})
+        items = (body.get("chapters") or {}).get("items") or []
+        check(s == 200 and len(items) == 2 and items[0]["start"] == 0 and items[0]["title"] == "Intro (Indonesian)"
+              and items[1]["start"] > 0, "chapters: fenced JSON parsed, invalid entry dropped", f"{s} {body}")
+        _, jd = request(base, "GET", f"/api/jobs/{cid}?segments=0")
+        check((jd.get("chapters") or {}).get("items") == items, "chapters: returned with the job")
+        s, body = request(base, "POST", f"/api/jobs/{cid}/quiz", json_body={"count": 7})
+        check(s == 400 and body.get("error_code") == "bad_quiz_size", "quiz: size validated")
+        s, body = request(base, "POST", f"/api/jobs/{cid}/quiz", json_body={"count": 5, "lang": "en"})
+        qs = (body.get("quiz") or {}).get("questions") or []
+        check(s == 200 and len(qs) == 5 and "answer" not in qs[0] and len(qs[0]["options"]) == 4,
+              "quiz: 5 questions without answers", f"{s} {str(body)[:200]}")
+        s, body = request(base, "POST", f"/api/jobs/{cid}/quiz/check", json_body={"answers": [0, 1, 0, None]})
+        check(s == 200 and body.get("score") == 2 and body.get("total") == 5 and body["results"][1]["correct"]
+              and body["results"][4]["picked"] is None and body.get("best", {}).get("score") == 2,
+              "quiz: answers scored, best kept", f"{s} {str(body)[:200]}")
+        request(base, "POST", f"/api/jobs/{cid}/quiz/check", json_body={"answers": []})
+        _, jd = request(base, "GET", f"/api/jobs/{cid}?segments=0")
+        check(jd.get("quiz", {}).get("best", {}).get("score") == 2 and jd["quiz"]["last"]["score"] == 0,
+              "quiz: last and best score returned with the job", str(jd.get("quiz"))[:200])
+
+        # Search across transcripts, tags
+        _, full = request(base, "GET", f"/api/jobs/{cid}")
+        word = next((w for s_ in full.get("segments", []) for w in s_["text"].split() if len(w) > 3), "xx")
+        s, body = request(base, "GET", f"/api/search?q={urllib.parse.quote(word.upper())}")
+        check(s == 200 and any(r["job_id"] == cid and r["hits"] for r in body.get("results", [])),
+              "search: finds a word in finished transcripts (case-insensitive)", f"{word} {str(body)[:200]}")
+        _, body = request(base, "GET", "/api/search?q=zzqqxxnotthere")
+        check(body.get("results") == [], "search: no match -> empty list")
+        s, body = request(base, "PATCH", f"/api/jobs/{cid}", json_body={"tags": [" Algo  1 ", "algo 1", "x" * 40, ""]})
+        check(s == 200 and body.get("tags") == ["Algo 1", "x" * 30], "tags: cleaned and saved", f"{s} {body.get('tags')}")
+
         request(base, "POST", chat_url, json_body={"text": "keep until job is deleted"})
         wait_chat(base, cid)
         request(base, "DELETE", f"/api/jobs/{cid}")

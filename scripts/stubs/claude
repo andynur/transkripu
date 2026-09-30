@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Test stub for the Claude Code CLI (`claude -p --output-format stream-json`): reads
 the prompt from stdin and streams a fixed recap or chat answer citing one timestamp.
-A chat question containing STUB_SLOW streams slowly; STUB_FAIL returns an error."""
+A chat question containing STUB_SLOW streams slowly; STUB_FAIL returns an error; STUB_NOFOLLOW
+leaves out the @@followups block. A "Suggest 5 questions" prompt gets 5 numbered questions;
+chapter and quiz prompts get JSON (chapters in a ``` fence, with one invalid entry to drop)."""
 import json, re, sys, time
 
 args = sys.argv[1:]
@@ -17,10 +19,23 @@ def emit(event):
 stamps = re.findall(r"^\[(\d+:\d{2}(?::\d{2})?)\]", prompt, re.M)
 last = stamps[-1] if stamps else "00:00"
 if "The user's latest question" in prompt:
-    question = prompt.rsplit("The user's latest question", 1)[1].split("\n", 1)[1].strip()
+    question = prompt.rsplit("The user's latest question", 1)[1].split("\n", 1)[1].strip().split("\n\nAfter the answer")[0]
     turns = prompt.count("\nUser: ") + prompt.startswith("User: ")
     answer_lang = re.search(r"answer it in (\w+)", prompt).group(1)
     chunks = [f"Answer to: {question} ", f"(earlier turns: {turns}, in {answer_lang}) ", f"see [{last}]"]
+    if "STUB_NOFOLLOW" not in question:
+        chunks += ["\n\n@@fol", "lowups\n", *(f"{n}. Follow-up {n} in {answer_lang}?\n" for n in range(1, 6))]
+elif '[{"start": "mm:ss"' in prompt:
+    lang = re.search(r"Titles in (\w+)", prompt).group(1)
+    chunks = ["```json\n", json.dumps([{"start": "00:00", "title": f"Intro ({lang})"},
+                                       {"start": f"[{last}]", "title": "Main part"}, {"start": "99:99:99", "title": "Bad"}]), "\n```"]
+elif "multiple-choice quiz" in prompt:
+    n = int(re.search(r"quiz of (\d+) questions", prompt).group(1))
+    chunks = [json.dumps([{"q": f"Question {i + 1}?", "options": ["A", "B", "C", "D"], "answer": i % 4,
+                           "explain": "Because.", "ts": last} for i in range(n)])]
+elif "Suggest 5 questions" in prompt:
+    lang = re.search(r"about this recording, in (\w+)", prompt).group(1)
+    chunks = [f"{n}. Starter {n} in {lang}?\n" for n in range(1, 6)] + ["2. Starter 2 in " + lang + "?\n"]
 else:
     lang = "Indonesian" if "in Indonesian" in prompt else "English"
     chunks = [f"# Stub recap\n\n## Summary\nA {lang} recap of {len(stamps)} segments.\n\n",

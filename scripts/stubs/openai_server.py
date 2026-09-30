@@ -60,7 +60,9 @@ class Handler(BaseHTTPRequestHandler):
         stamps = re.findall(r"\[(\d+:\d{2}(?::\d{2})?)\]", prompt)
         last = stamps[-1] if stamps else "00:00"
         if "The user's latest question" in prompt:
-            kind, chunks = "chat", [f"Stub answer from {model} ", f"see [{last}]"]
+            kind, chunks = "chat", [f"Stub answer from {model} ", f"see [{last}]", "\n@@followups\n- Next?\n"]
+        elif "Suggest 5 questions" in prompt:
+            kind, chunks = "suggest", [f"Question {n}?\n" for n in range(1, 6)]
         elif "This is part" in prompt:
             kind, chunks = "map", [f"- Note on part {prompt.count(chr(10))} ", f"[{last}]"]
         else:
