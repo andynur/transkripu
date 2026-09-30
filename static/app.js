@@ -5,7 +5,8 @@
  *   EN/ID switch is stored in localStorage ("transkripu-lang").
  * - Theme: light by default; the dark-mode toggle sets <html data-theme> and
  *   is stored in localStorage ("transkripu-theme").
- * - Data: polls /api/jobs (and /api/jobs/:id while the drawer is open).
+ * - Routing: "#/" is the home page, "#/job/<id>" the transcript page (see route()).
+ * - Data: polls /api/jobs (and /api/jobs/:id while a transcript page is open).
  *   The backend sends machine-readable status/stage/error codes that are
  *   translated here.
  */
@@ -106,6 +107,8 @@
       "err.forbidden": "Request blocked. Open the app at http://127.0.0.1:8765.",
 
       "drawer.close": "Close",
+      "detail.back": "Back", "detail.backHint": "Back to the transcript list", "detail.crumbs": "Breadcrumb",
+      "detail.notFound": "Transcript not found",
       "drawer.failed": "Processing failed",
       "drawer.transcript": "Transcript",
       "drawer.search": "Search transcript",
@@ -361,6 +364,8 @@
       "err.forbidden": "Permintaan diblokir. Buka aplikasi di http://127.0.0.1:8765.",
 
       "drawer.close": "Tutup",
+      "detail.back": "Kembali", "detail.backHint": "Kembali ke daftar transkrip", "detail.crumbs": "Navigasi",
+      "detail.notFound": "Transkrip tidak ditemukan",
       "drawer.failed": "Gagal diproses",
       "drawer.transcript": "Transkrip",
       "drawer.search": "Cari di transkrip",
@@ -906,7 +911,8 @@
     $("#noMatch").hidden = !state.jobs.length || jobs.length > 0;
     // Show the running job's progress in the browser tab title.
     const running = state.jobs.find((j) => j.status === "transcribing" || j.status === "downloading");
-    document.title = running ? `(${Math.round(running.progress || 0)}%) Transkripu` : "Transkripu";
+    const base = state.openId && state.detail?.title ? `${state.detail.title} · Transkripu` : "Transkripu";
+    document.title = running ? `(${Math.round(running.progress || 0)}%) ${base}` : base;
     // Rows are patched, not rebuilt: progress/sub-line change in place, other rows keep focus and hover.
     const pos = queuePositions(state.jobs);
     const tbody = $("#jobRows");
@@ -966,42 +972,70 @@
     return { key, html, sub, pct };
   }
 
-  // ---------------------------------------------------------------- detail drawer
-  let focusBeforeDrawer = null;
-  async function openDrawer(id) {
-    if (!state.openId) focusBeforeDrawer = document.activeElement;
+  // ---------------------------------------------------------------- routing: "#/" home, "#/job/<id>" transcript page
+  // Opening a job from the app pushes a history entry marked fromHome, so Back returns to the
+  // list (scroll and focus restored); a deep link or reload gets a Back that replaces instead.
+  const routeId = () => { const m = location.hash.match(/^#\/job\/([^/?#]+)/); return m ? decodeURIComponent(m[1]) : null; };
+  let homeScroll = 0, lastOpenId = null;
+
+  function openDrawer(id) {
+    if (routeId() === id) return route();
+    history.pushState({ fromHome: !routeId() }, "", `#/job/${encodeURIComponent(id)}`);
+    return route();
+  }
+
+  function goHome() {
+    if (history.state?.fromHome) history.back();
+    else { history.replaceState(null, "", "#/"); route(); }
+  }
+
+  async function route() {
+    const id = routeId();
+    if (id === state.openId) return;
+    if (id) return showDetail(id);
+    closeDetail();
+    $("#detailView").hidden = true;
+    $("#homeView").hidden = false;
+    $(".topnav__link").classList.add("is-active");
+    renderJobs();
+    window.scrollTo(0, homeScroll);
+    $(`#jobRows tr[data-id="${CSS.escape(lastOpenId || "")}"]`)?.focus({ preventScroll: true });
+  }
+
+  async function showDetail(id) {
+    if (!state.openId) homeScroll = window.scrollY;
+    closeDetail();
     Object.assign(state, { openId: id, renderedSegKey: "", renderedSegCount: 0, segCache: null, mediaFor: null, activeSeg: -1, segQuery: "" });
+    lastOpenId = id;
     $("#segSearch").value = "";
     $("#dActions").dataset.key = "";
     $("#dRecap").dataset.key = "";
-    clearTimeout(chatTimer);
     Object.assign(state, { chat: null, recapLang: null, chatLang: null, studyLang: {}, studyError: {}, quizPick: {}, quizResult: null, chatEdit: false });
     ["#dChapters", "#dQuiz", "#dTags"].forEach((sel) => { $(sel).dataset.key = ""; });
     $("#chatEdit").hidden = true;
     $("#chatLang").dataset.key = "";
     $("#chatInput").value = "";
-    $("#blanket").hidden = false;
-    requestAnimationFrame(() => $("#drawer").classList.add("is-open"));
-    $("#drawer").setAttribute("aria-hidden", "false");
-    $("#closeDrawer").focus();
+    const cached = state.jobs.find((j) => j.id === id);
+    $("#dTitle").textContent = $("#dCrumb").textContent = cached?.title || "";
+    $("#dMeta").innerHTML = "";
+    $("#homeView").hidden = true;
+    $("#detailView").hidden = false;
+    $(".topnav__link").classList.remove("is-active");
+    window.scrollTo(0, 0);
+    $("#dTitle").focus({ preventScroll: true });
     renderJobs();
     await refreshDetail();
     loadChat();
   }
 
-  function closeDrawer() {
+  /** Stop playback and drop the open job's state (leaving the page or switching jobs). */
+  function closeDetail() {
+    if (!state.openId) return;
     $("#dPlayer video, #dPlayer audio")?.pause();
+    $("#dPlayer").innerHTML = "";
+    $("#dSegments").innerHTML = "";
     clearTimeout(chatTimer);
-    state.chat = null;
-    state.openId = null;
-    state.detail = null;
-    state.segCache = null;
-    $("#drawer").classList.remove("is-open");
-    $("#drawer").setAttribute("aria-hidden", "true");
-    focusBeforeDrawer?.focus?.();
-    focusBeforeDrawer = null;
-    setTimeout(() => { if (!state.openId) { $("#blanket").hidden = true; $("#dPlayer").innerHTML = ""; } }, 220);
-    renderJobs();
+    Object.assign(state, { chat: null, openId: null, detail: null, segCache: null });
   }
 
   /** Fetch the open job. While it is transcribing, only new live segments are requested (?since=N);
@@ -1015,10 +1049,12 @@
     let d;
     try {
       d = await api(`/api/jobs/${encodeURIComponent(id)}${since ? `?since=${since}` : lean ? "?segments=0" : ""}`);
-    } catch {
-      return closeDrawer();
+    } catch (err) {
+      if (state.openId !== id) return;
+      flag("error", t("detail.notFound"), err.message);
+      return goHome();
     }
-    if (state.openId !== id) return; // drawer switched while the request was in flight
+    if (state.openId !== id) return; // page switched while the request was in flight
     if (d.segments == null) {
       if (!lean || state.segCache !== c) { state.segCache = null; return refreshDetail(); }
     } else if (d.segments_from > 0) {
@@ -1029,8 +1065,10 @@
     }
     state.segCache.live = !!d.segments_live;
     d.segments = state.segCache.segs;
+    const titled = state.detail?.title === d.title;
     state.detail = d;
     renderDetail(d);
+    if (!titled) renderJobs(); // tab title shows the open transcript
   }
 
   function timingLine(tm) {
@@ -1062,7 +1100,7 @@
       d.transcript_source ? `<span>· ${esc(t("drawer.src." + d.transcript_source))}</span>` : "",
       d.edited ? `<span>· ${esc(t("drawer.edited"))}</span>` : "",
     ].join("") + timingLine(d.timings);
-    $("#dTitle").textContent = d.title || "";
+    $("#dTitle").textContent = $("#dCrumb").textContent = d.title || "";
 
     // Action bar — only re-rendered when status/outputs change so an open dropdown survives polling.
     const actionsKey = `${lang}:${d.status}:${(d.outputs || []).join()}:${d.media || ""}:${d.transcript_source || ""}`;
@@ -1163,7 +1201,7 @@
   }
 
   /** Recap section of a finished job. Re-rendered only when its state changes. */
-  // Recap/chat output language: the user's pick in the drawer, else what the job used
+  // Recap/chat output language: the user's pick on the transcript page, else what the job used
   // last, else the recording's language (ai_lang_default from the backend).
   const recapLangOf = (d) => state.recapLang || (d.recap_status === "done" && d.recap_lang) || d.ai_lang_default || "en";
   const chatLangOf = (d) => state.chatLang || d.chat_lang || d.ai_lang_default || "en";
@@ -1571,7 +1609,8 @@
     if (media) media.currentTime = start;
     state.activeSeg = -2;
     highlightAt(start);
-    $(".seg.is-active")?.scrollIntoView({ block: "center" });
+    const seg = $(".seg.is-active");
+    if (seg) scrollSeg(seg);
   }
 
   /** Escape `text` and wrap case-insensitive matches of `q` in <mark> (matching on raw text, not on entities). */
@@ -1644,6 +1683,13 @@
     }
   }
 
+  /** Center a transcript line inside its own scroll pane, without scrolling the page. */
+  function scrollSeg(el, behavior = "auto") {
+    const list = $("#dSegments");
+    if (list.scrollHeight <= list.clientHeight) return el.scrollIntoView({ block: "center", behavior });
+    list.scrollTo({ top: el.offsetTop - (list.clientHeight - el.offsetHeight) / 2, behavior });
+  }
+
   function highlightAt(time) {
     const segs = state.detail?.segments || [];
     // Last segment starting at or before `time` (segments are sorted by start).
@@ -1665,7 +1711,7 @@
     const el = $(`.seg[data-i="${idx}"]`);
     if (el) {
       el.classList.add("is-active");
-      if ($("#followToggle").checked) el.scrollIntoView({ block: "center", behavior: "smooth" });
+      if ($("#followToggle").checked) scrollSeg(el, "smooth");
     }
   }
 
@@ -1706,7 +1752,6 @@
           setTimeout(tick, 1200); // switch polling to the fast interval
           break;
         case "settings":
-          closeDrawer();
           openSettings();
           return;
         case "notes-md": {
@@ -1739,8 +1784,9 @@
           if (!confirm(t("act.confirmDelete", { title: d.title }))) return;
           await api(`/api/jobs/${d.id}`, { method: "DELETE" });
           flag("success", t("flag.deleted"), d.title);
-          closeDrawer();
-          break;
+          goHome();
+          await refreshJobs();
+          return;
       }
       await refreshJobs();
       await refreshDetail();
@@ -1789,7 +1835,7 @@
     $("#settings").setAttribute("aria-hidden", "true");
     focusBeforeSettings?.focus?.();
     focusBeforeSettings = null;
-    setTimeout(() => { if (!state.openId && !state.settingsOpen) $("#blanket").hidden = true; }, 220);
+    setTimeout(() => { if (!state.settingsOpen) $("#blanket").hidden = true; }, 220);
     if (state.detail) { $("#dRecap").dataset.key = ""; renderRecap(state.detail); renderChat(true); }
     renderJobs(); // onboarding hint depends on the chat provider
   }
@@ -1979,7 +2025,7 @@
 
   // ---------------------------------------------------------------- polling
   // Polls fast while work runs. A hidden tab keeps polling the list slowly (tab-title progress,
-  // notifications) and skips the drawer; returning to the tab polls at once.
+  // notifications) and skips the transcript page; returning to the tab polls at once.
   let pollTimer = null;
   async function tick() {
     clearTimeout(pollTimer);
@@ -2030,7 +2076,7 @@
   dz.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("#fileInput").click(); }
   });
-  // "/" jumps to the history search (unless typing in a field or the drawer is open).
+  // "/" jumps to the history search (unless typing in a field or a transcript page is open).
   document.addEventListener("keydown", (e) => {
     if (e.key !== "/" || state.openId || e.target.closest("input, textarea, select, [contenteditable]")) return;
     e.preventDefault();
@@ -2041,12 +2087,14 @@
     const tr = e.target.closest("tr[data-id]");
     if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openDrawer(tr.dataset.id); }
   });
-  $("#closeDrawer").addEventListener("click", closeDrawer);
-  $("#blanket").addEventListener("click", () => (state.settingsOpen ? closeSettings() : closeDrawer()));
+  $("#backBtn").addEventListener("click", goHome);
+  window.addEventListener("popstate", route);
+  window.addEventListener("hashchange", route);
+  $("#blanket").addEventListener("click", closeSettings);
   document.addEventListener("keydown", (e) => {
-    const panel = state.settingsOpen ? $("#settings") : state.openId ? $("#drawer") : null;
+    const panel = state.settingsOpen ? $("#settings") : null;
     if (!panel) return;
-    if (e.key === "Escape") return state.settingsOpen ? closeSettings() : closeDrawer();
+    if (e.key === "Escape") return closeSettings();
     if (e.key !== "Tab") return;
     // Keep keyboard focus inside the open drawer (modal dialog).
     const focusable = $$('button, [href], input, select, textarea, summary, audio, video, [tabindex]:not([tabindex="-1"])', panel)
@@ -2100,7 +2148,7 @@
   $("#dActions").addEventListener("click", (e) => { const b = e.target.closest("[data-act]"); if (b) onAction(b.dataset.act, b); });
   document.addEventListener("click", (e) => { if (!e.target.closest(".dropdown")) $$(".dropdown__menu").forEach((m) => (m.hidden = true)); });
   // EN/ID output-language toggles in the recap and chat cards.
-  $("#drawer").addEventListener("click", (e) => {
+  $("#detailView").addEventListener("click", (e) => {
     const b = e.target.closest("[data-ai-lang]");
     if (!b || !state.detail) return;
     const [kind, code] = b.dataset.aiLang.split(":");
@@ -2225,7 +2273,7 @@
     const li = e.target.closest(".seg.is-editing");
     if (li) saveSegment(li, !li.dataset.cancel);
   });
-  // Player shortcuts while the drawer is open: K / Space play-pause, J / L jump 5 s.
+  // Player shortcuts while a transcript page is open: K / Space play-pause, J / L jump 5 s.
   document.addEventListener("keydown", (e) => {
     const media = $("#dPlayer video, #dPlayer audio");
     if (!state.openId || state.settingsOpen || !media || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -2252,5 +2300,6 @@
   resetSubmit();
   loadHealth().catch(() => flag("error", t("flag.connect")));
   loadSettings().catch(() => {});
+  route();
   tick();
 })();
